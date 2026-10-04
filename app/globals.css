@@ -1,3 +1,6 @@
 :root { font-family: Arial, sans-serif; color: #252923; background: #f6f7f2; }
 body { margin: 0; }
 main { max-width: 1100px; margin: auto; padding: 64px 24px; }
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; min-height: 70vh; }
+.trace-visual { max-width: 100%; }
+@media (max-width: 700px) { .hero { grid-template-columns: 1fr; } }
