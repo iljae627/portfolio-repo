@@ -423,6 +423,9 @@ svg { flex-shrink: 0; }
 .minimal-name { color: #8b95a1; font-size: 13px; letter-spacing: -.02em; }
 .character-float { width: 190px; height: 190px; margin: 7px auto 0; animation: character-breathe 5s ease-in-out infinite; will-change: transform; }
 .character-float img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pokemon-switch { display: block; padding: 8px; border: 0; border-radius: 24px; background: transparent; }
+.pokemon-image { opacity: 0; transition: opacity .4s ease; }
+.pokemon-image.ready { opacity: 1; }
 .minimal-intro h1 { font-size: clamp(37px, 4.5vw, 62px); line-height: 1.22; letter-spacing: -.06em; font-weight: 750; }
 .minimal-intro h1 span { color: #2463eb; }
 .minimal-description { color: #8b95a1; font-size: 16px; margin-top: 22px; }

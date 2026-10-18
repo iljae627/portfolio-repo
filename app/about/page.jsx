@@ -68,7 +68,7 @@ export default function About() { return <main id="main" className="about-page">
           <div>
             <span className="eyebrow">걸어온 길</span>
             <h2>
-              경험이 쌓이는 방향<span className="lime-dot">.</span>
+              AWARD
             </h2>
           </div>
           <span className="mono muted">2021년부터 지금까지</span>

@@ -168,3 +168,12 @@ Vercel Production에 충분히 긴 난수 `CRON_SECRET`을 Secret 타입으로 �
 - `public/images/logos/naver-blog.png`: [네이버 블로그 공식 이미지](https://ssl.pstatic.net/static/blog/icon/og_270x270.png), 원본 파일 그대로 사용.
 - `public/images/logos/github.svg`: [GitHub Brand Toolkit](https://brand.github.com/foundations/logo)의 공식 [로고 묶음](https://brand.github.com/GitHub_Logos.zip) 중 `GitHub_Invertocat_Black_Clearspace.svg`, 원본 파일 그대로 사용. 로고는 각 제공자의 상표입니다.
 - `public/images/logos/journal.svg`: 이 사이트에서 만든 일반 문서 아이콘.
+
+
+## 랜덤 포켓몬 홈 이미지
+
+- `public/images/pokemon/1.png`부터 `1025.png`까지 전국도감 1~1025번 기본 형태의 원본 이미지를 보관합니다. 2026-10-19에 PokéAPI 종 목록과 official-artwork 폴더의 전체 대응을 확인했으며 누락은 없습니다. 색이 다른 개체와 메가·리전 폼은 별도 항목으로 넣지 않습니다.
+- 이미지 출처: [PokéAPI sprites](https://github.com/PokeAPI/sprites), `sprites/pokemon/other/official-artwork`. 각 PNG의 서명과 upstream Git blob SHA-1을 확인했습니다. 포켓몬 명칭과 아트워크의 권리는 각 권리자에게 있습니다.
+- 전체 목록은 `data/pokemon.json`, 동작은 `components/HeroPokemon.jsx`에 있습니다. 홈 진입 시 랜덤 선택하며 보이는 탭에서 10초마다 교체합니다. 클릭·Enter·Space로 즉시 바꿀 수 있습니다. 연속으로 같은 번호를 선택하지 않습니다.
+- 이미지 요청은 이 사이트의 파일만 사용하며 Next.js Image가 화면 크기에 맞춰 최적화합니다. 원본 1,025개를 브라우저에 한꺼번에 내려보내지 않습니다. 실패 시 기존 캐릭터로 대체합니다.
+- 부드러운 이미지 표시와 기존 떠오름 애니메이션을 유지하며, reduced-motion 설정에서는 모션을 생략합니다. 소개의 이력 제목은 `AWARD`로 표시합니다.
