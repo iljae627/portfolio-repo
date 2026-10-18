@@ -11,7 +11,7 @@ export default async function Archive() {
   const { items } = await getArchive();
   return (
     <main id="main" className="shell section archive-page">
-      <span className="eyebrow">THE LEARNING ARCHIVE</span>
+      <span className="eyebrow">활동 아카이브</span>
       <div className="archive-title">
         <h1>
           호기심이 남긴 기록<span className="lime-dot">.</span>

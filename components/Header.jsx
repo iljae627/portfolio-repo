@@ -10,7 +10,7 @@ export default function Header() {
     <header className="header">
       <div className="shell nav">
         <Link href="/" className="wordmark" onClick={() => setOpen(false)}>
-          iljae<span>®</span>
+          정일재<span>.</span>
         </Link>
         <button
           className="menu-toggle"
@@ -27,10 +27,10 @@ export default function Header() {
           className={open ? "nav-links open" : "nav-links"}
         >
           {[
-            ["/", "Overview"],
-            ["/#work", "Selected Work"],
-            ["/archive", "Archive"],
-            ["/#about", "About"],
+            ["/", "홈"],
+            ["/#work", "프로젝트"],
+            ["/archive", "아카이브"],
+            ["/#about", "소개"],
           ].map(([href, label]) => (
             <Link
               key={href}
@@ -43,7 +43,7 @@ export default function Header() {
           ))}
         </nav>
         <a className="nav-contact" href="mailto:iljae627@gmail.com">
-          Let’s talk <ArrowUpRight size={16} />
+          연락하기 <ArrowUpRight size={16} />
         </a>
       </div>
     </header>

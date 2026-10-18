@@ -44,7 +44,7 @@ export default async function Project({ params }) {
       </div>
       <div className="detail-body">
         <aside>
-          <span className="mono muted">ROLE & CONTEXT</span>
+          <span className="mono muted">담당 역할</span>
           <p>{p.role}</p>
           <a
             className="button dark"
@@ -57,12 +57,12 @@ export default async function Project({ params }) {
         </aside>
         <div>
           <section>
-            <span className="eyebrow">01 / QUESTION</span>
+            <span className="eyebrow">문제</span>
             <h2>어떤 문제였나요?</h2>
             <p>{p.problem}</p>
           </section>
           <section>
-            <span className="eyebrow">02 / PROCESS</span>
+            <span className="eyebrow">분석 과정</span>
             <h2>어떻게 접근했나요?</h2>
             <ol>
               {p.approach.map((a) => (
@@ -71,7 +71,7 @@ export default async function Project({ params }) {
             </ol>
           </section>
           <section>
-            <span className="eyebrow">03 / OUTCOME</span>
+            <span className="eyebrow">결과와 기록</span>
             <h2>무엇을 남겼나요?</h2>
             <p>{p.result}</p>
             <p className="evidence-note">{p.caveat}</p>

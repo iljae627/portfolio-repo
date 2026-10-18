@@ -19,7 +19,7 @@ export default async function Admin({ searchParams }) {
     }
   return (
     <main id="main" className="shell section admin-page">
-      <span className="eyebrow">PORTFOLIO STUDIO</span>
+      <span className="eyebrow">포트폴리오 관리</span>
       <h1>활동 기록 관리</h1>
       <p className="muted">
         GitHub 계정으로 로그인하고 새로운 활동을 아카이브에 추가합니다.

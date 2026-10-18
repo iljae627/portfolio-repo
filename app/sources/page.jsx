@@ -8,7 +8,7 @@ export default async function Sources() {
   const time = (date) => date ? new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", dateStyle: "medium", timeStyle: "short" }).format(new Date(date)) : "아직 없음";
   return (
     <main id="main" className="shell section prose">
-      <span className="eyebrow">SOURCES & EDITORIAL NOTES</span>
+      <span className="eyebrow">출처와 동기화 현황</span>
       <h1>기록의 근거</h1>
       <p>
         초기 분석 기준일: {snapshot.collectedAt}. 이 페이지는 공개 활동 기록을
