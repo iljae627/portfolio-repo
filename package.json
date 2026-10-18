@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test tests/*.test.mjs",
-    "db:indexes": "node --env-file=.env.local scripts/indexes.mjs"
+    "db:indexes": "node --env-file=.env.local scripts/indexes.mjs",
+    "db:seed": "node --env-file=.env.local scripts/seed.mjs"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "3.11.3",

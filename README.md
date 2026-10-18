@@ -1,5 +1,7 @@
 # 정일재 — Security, traced.
 
+운영 사이트: https://iljae627-portfolio.vercel.app
+
 공개 활동을 근거로 재구성한 반응형 보안 포트폴리오입니다. Vercel에 배포하는 **Next.js App Router** 프로젝트입니다.
 
 ## 시작
@@ -28,7 +30,7 @@ npm start
 | JavaScript | `.js`, `.jsx`, `.mjs`: 검색, 필터, 페이지네이션, 입력 검증, API                                      |
 | React      | 컴포넌트, 검색 및 필터 상태, 관리자 폼                                                               |
 | Next.js    | App Router, 프로젝트 상세 SSG, 서버 컴포넌트, API Route Handler, 메타데이터 및 sitemap               |
-| Auth       | Auth.js (next-auth v5) + GitHub OAuth, MongoDB 세션, 서버에서 관리자 GitHub 고유 ID 검사                 |
+| Auth       | Auth.js (next-auth v5) + GitHub OAuth, MongoDB 세션, 서버에서 관리자 GitHub 고유 ID 검사             |
 | MongoDB    | `activities` 게시물, 인증의 users/sessions/accounts/verification_tokens 컬렉션                       |
 | Vercel     | Next.js 기본 빌드 및 Node.js 서버 함수 배포                                                          |
 
@@ -74,10 +76,10 @@ npm start
 | `NEXT_PUBLIC_SITE_URL` | 공개 사이트 절대 URL. 빌드 전 설정          |
 | `MONGODB_URI`          | Atlas 연결 문자열, 서버 전용                |
 | `MONGODB_DB`           | `iljae_portfolio`                           |
-| `AUTH_SECRET`   | 충분히 긴 난수, 서버 전용                   |
-| `AUTH_URL`      | 로그인·게시가 일어나는 정확한 사이트 origin |
-| `AUTH_GITHUB_ID`     | OAuth App Client ID                         |
-| `AUTH_GITHUB_SECRET` | OAuth App Client Secret, 서버 전용          |
+| `AUTH_SECRET`          | 충분히 긴 난수, 서버 전용                   |
+| `AUTH_URL`             | 로그인·게시가 일어나는 정확한 사이트 origin |
+| `AUTH_GITHUB_ID`       | OAuth App Client ID                         |
+| `AUTH_GITHUB_SECRET`   | OAuth App Client Secret, 서버 전용          |
 | `ADMIN_GITHUB_ID`      | 소유자 GitHub 숫자 ID                       |
 
 로컬에서는 `.env.example`을 `.env.local`로 복사해 값을 입력합니다. Development/Preview/Production은 별도로 설정하고 Preview에 운영 DB를 공유하지 않는 것을 권장합니다. Preview OAuth 검증은 고정 preview domain과 별도 OAuth App을 사용합니다. 비밀 값에 `NEXT_PUBLIC_` 접두사를 붙이면 안 됩니다.
@@ -90,13 +92,14 @@ Vercel CLI를 사용하는 경우, 로컬 파일을 덮어쓸 수 있으므로 �
 
 ```powershell
 npm run db:indexes
+npm run db:seed
 ```
 
 activities ID, 공개 여부·날짜, OAuth 계정, 이메일, 세션 토큰 등에 인덱스를 생성하고 세션·인증 만료 데이터에 TTL 인덱스를 설정합니다. MongoDB adapter는 별도 SQL migration을 요구하지 않습니다.
 
 ## 활동 추가와 콘텐츠 수정
 
-관리자 로그인 → 제목, 요약, 날짜, 분야, HTTPS 근거 URL, 태그 작성 → 활동 게시. 저장한 글은 MongoDB `activities`에 들어가고 공개 아카이브에 반영됩니다. 기본 169개 공개 기록은 `data/archive.json` 스냅샷으로 제공됩니다. DB가 없거나 읽기에 실패해도 이 기록은 표시됩니다.
+관리자 로그인 → 제목, 요약, 날짜, 분야, HTTPS 근거 URL, 태그 작성 → 활동 게시. 저장한 글은 MongoDB `activities`에 들어가고 공개 아카이브에 반영됩니다. 기본 169개 공개 기록은 `npm run db:seed`로 MongoDB에 가져왔습니다. `data/archive.json`은 DB 장애 시 스냅샷으로 사용되며, 동일 ID는 중복 표시하지 않습니다. DB가 없거나 읽기에 실패해도 이 기록은 표시됩니다.
 
 - 대표 작업 및 이력: `lib/projects.js`.
 - 소개 및 메인 구성: `app/page.jsx`.
@@ -109,7 +112,7 @@ activities ID, 공개 여부·날짜, OAuth 계정, 이메일, 세션 토큰 등
 ## 검증
 
 - Next.js 프로덕션 빌드 성공.
-- 콘텐츠 무결성 및 입력 검증 테스트 7개 통과.
+- 콘텐츠 무결성 및 입력 검증 테스트 9개 통과.
 - 임시 로컬 MongoDB replica set + 합성 세션으로 인증·권한·입력·쓰기·조회 통합 검사 10개 통과.
 - 브라우저: 개발 필터, 검색, 빈 검색 결과, 초기화, 페이지네이션, 모바일 메뉴 확인.
 - 실제 GitHub OAuth 왕복 및 Atlas 연결은 **실제 환경변수를 설정한 뒤** 검증해야 합니다. 합성 세션 테스트가 OAuth 제공자 검증을 대신하지 않습니다.

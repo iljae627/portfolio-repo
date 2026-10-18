@@ -7,7 +7,9 @@ try {
   await db.collection("activities").createIndex({ id: 1 }, { unique: true });
   await db.collection("activities").createIndex({ published: 1, date: -1 });
   await db.collection("users").createIndex({ email: 1 }, { unique: true });
-  await db.collection("sessions").createIndex({ sessionToken: 1 }, { unique: true });
+  await db
+    .collection("sessions")
+    .createIndex({ sessionToken: 1 }, { unique: true });
   await db
     .collection("sessions")
     .createIndex({ expires: 1 }, { expireAfterSeconds: 0 });
