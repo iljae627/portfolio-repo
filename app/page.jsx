@@ -24,7 +24,7 @@ export default async function Home() {
         <span className="hero-label">정일재 · 정보보호 포트폴리오</span>
         <div className="hero-grid">
           <div className="hero-copy">
-            <p className="hero-intro">안녕하세요, 정일재입니다.</p>
+            <div className="hero-greeting"><Image src="/images/portfolio/hero-seal.png" alt="환하게 웃는 회색 캐릭터" width={112} height={112} priority /><p className="hero-intro">안녕하세요, 정일재입니다.</p></div>
             <h1>
               흔적을 읽고,
               <br />

@@ -56,6 +56,12 @@ export default async function Project({ params }) {
           </a>
         </aside>
         <div>
+          {p.inspiration && <section>
+            <span className="eyebrow">시작한 계기</span><h2>호기심이 시작된 글</h2>
+            <p>{p.inspiration.text}</p>
+            <a className="related-link" href={p.inspiration.url} target="_blank" rel="noreferrer">{p.inspiration.title} <ArrowUpRight size={15} /></a>
+            <p className="image-credit">위 통신 흐름도는 제공해 주신 참고 이미지이며, manatails의 원문 분석을 소개하는 자료입니다.</p>
+          </section>}
           <section>
             <span className="eyebrow">문제</span>
             <h2>어떤 문제였나요?</h2>

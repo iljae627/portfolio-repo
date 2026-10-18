@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, ArrowUpRight, ArrowLeft, ArrowRight } from "lucide-react";
+import ArchiveThumbnail from "./ArchiveThumbnail";
 export default function ArchiveExplorer({ items }) {
   const params = useSearchParams();
   const [source, setSource] = useState(params.get("source") || "전체");
@@ -88,7 +89,9 @@ export default function ArchiveExplorer({ items }) {
       </div>
       <div className="archive-list">
         {filtered.slice((current - 1) * 12, current * 12).map((x) => (
-          <a href={x.url} key={x.id} target="_blank" rel="noreferrer">
+          <article className="archive-entry" key={x.id}>
+          <ArchiveThumbnail item={x} />
+          <a className="archive-link" href={x.url} target="_blank" rel="noreferrer">
             <div className="archive-item-meta">
               <span
                 className={`source-badge ${x.source === "GitHub" ? "github" : ""}`}
@@ -112,6 +115,7 @@ export default function ArchiveExplorer({ items }) {
             </div>
             <ArrowUpRight size={19} />
           </a>
+          </article>
         ))}
       </div>
       {!filtered.length && (
