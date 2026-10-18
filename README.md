@@ -142,3 +142,7 @@ Vercel Production에 충분히 긴 난수 `CRON_SECRET`을 Secret 타입으로 �
 ## 디자인
 
 2026-10-19에 Apple·토스의 웹페이지를 참고해 흰색 배경, 블루 포인트, 중앙 정렬 소개, 둥근 카드, 읽기 편한 글자 위계로 개편했습니다. 실제 활동과 기능은 유지하며, 타사 로고·제품 이미지는 사용하지 않았습니다. 색과 여백은 `app/globals.css`, 카드 표지는 `components/ProjectVisual.jsx`에서 조정합니다.
+
+## 블로그 이미지
+
+기술 블로그의 원본 이미지 6개를 `public/images/portfolio`에 보관합니다. 메인 갤러리, Android 프로젝트, 학습 글 썸네일에 사용하며 각 원문과 연결했습니다. 원본 파일은 변경하지 않고 Next.js Image가 화면 크기별 WebP를 제공합니다. 화면 캡처는 내용을 보존하고 현장 사진·썸네일은 CSS로 표시 범위를 조정합니다. 원본 URL·설명·출처는 `lib/media.js`와 운영 `/sources`에서 확인할 수 있습니다.
