@@ -7,7 +7,6 @@ import {
   Binary,
   Braces,
 } from "lucide-react";
-import TraceVisual from "@/components/TraceVisual";
 import WorkGrid from "@/components/WorkGrid";
 import { projects, milestones } from "@/lib/projects";
 import { getArchive } from "@/lib/content";
@@ -19,19 +18,14 @@ export default async function Home() {
   return (
     <main id="main">
       <section className="hero shell">
-        <div className="hero-top">
-          <span className="eyebrow">
-            <span className="status-dot" /> SECURITY RESEARCHER IN THE MAKING
-          </span>
-          <span className="mono muted">BASED IN KOREA / 2026</span>
-        </div>
+        <span className="hero-label">정일재 · 정보보호 포트폴리오</span>
         <div className="hero-grid">
           <div className="hero-copy">
             <p className="hero-intro">안녕하세요, 정일재입니다.</p>
             <h1>
               흔적을 읽고,
               <br />
-              원리를 <span className="underline-lime">파고듭니다.</span>
+              <span className="hero-accent">원리를 파고듭니다.</span>
             </h1>
             <p className="hero-desc">
               디지털 포렌식에서 리버스 엔지니어링까지.
@@ -49,25 +43,8 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          <div className="hero-art">
-            <div className="art-label mono">FIG. 01 — FOLLOW THE TRACE</div>
-            <TraceVisual />
-            <div className="art-caption">
-              <span className="cross">+</span>
-              <span>
-                보이지 않는 것을 이해하는 과정.
-                <br />
-                <b>Trace. Analyze. Build.</b>
-              </span>
-              <span className="mono">
-                37° N<br />
-                127° E
-              </span>
-            </div>
-          </div>
         </div>
         <div className="hero-base">
-          <span className="mono">JUNG ILJAE / INFORMATION SECURITY</span>
           <div>
             <a
               href="https://github.com/iljae627"
@@ -96,7 +73,7 @@ export default async function Home() {
       <section className="numbers">
         <div className="shell number-grid">
           <div>
-            <span className="mono">01 / COMPETITION</span>
+              <span className="mono">함께 만든 성과</span>
             <p>
               <strong>17</strong>
               <span>위</span>
@@ -106,7 +83,7 @@ export default async function Home() {
             </a>
           </div>
           <div>
-            <span className="mono">02 / EXPLORATION</span>
+              <span className="mono">직접 탐구한 과정</span>
             <p>
               <strong>
                 14<span>/14</span>
@@ -117,7 +94,7 @@ export default async function Home() {
             </a>
           </div>
           <div>
-            <span className="mono">03 / DOCUMENTATION</span>
+              <span className="mono">분석을 남긴 기록</span>
             <p>
               <strong>{technicalPosts}</strong>
               <span>편</span>
@@ -127,7 +104,7 @@ export default async function Home() {
             </Link>
           </div>
           <div>
-            <span className="mono">04 / CONSISTENCY</span>
+              <span className="mono">꾸준히 쌓은 학습</span>
             <p>
               <strong>{naverPosts}</strong>
               <span>편</span>
@@ -141,7 +118,7 @@ export default async function Home() {
       <section id="work" className="section shell">
         <div className="section-head">
           <div>
-            <span className="eyebrow">01 — SELECTED WORK</span>
+            <span className="eyebrow">프로젝트</span>
             <h2>
               질문에서 시작한 작업들<span className="lime-dot">.</span>
             </h2>
@@ -157,7 +134,7 @@ export default async function Home() {
       <section id="about" className="about-section">
         <div className="shell about-grid">
           <div>
-            <span className="eyebrow">02 — ABOUT & APPROACH</span>
+            <span className="eyebrow">저를 소개합니다</span>
             <h2>
               답을 찾는 것에서,
               <br />
@@ -206,7 +183,6 @@ export default async function Home() {
                   <Icon size={24} strokeWidth={1.4} />
                 </div>
                 <div>
-                  <span className="mono muted">{n} / METHOD</span>
                   <h3>{title}</h3>
                   <p>{desc}</p>
                   <span className="mono tools">{tools}</span>
@@ -219,12 +195,12 @@ export default async function Home() {
       <section className="section shell journey">
         <div className="section-head">
           <div>
-            <span className="eyebrow">03 — MILESTONES</span>
+            <span className="eyebrow">걸어온 길</span>
             <h2>
               경험이 쌓이는 방향<span className="lime-dot">.</span>
             </h2>
           </div>
-          <span className="mono muted">2021 — NOW</span>
+          <span className="mono muted">2021년부터 지금까지</span>
         </div>
         <div className="timeline">
           {milestones.map((m) => (
@@ -241,7 +217,7 @@ export default async function Home() {
       </section>
       <section className="journal shell">
         <div>
-          <span className="eyebrow">04 — LEARNING IN PUBLIC</span>
+          <span className="eyebrow">배움을 나누는 일</span>
           <h2>
             기록은 다음 분석의
             <br />
@@ -259,13 +235,13 @@ export default async function Home() {
         <div className="journal-list">
           {[
             [
-              "RESEARCH / MOBILE",
+              "모바일 보안",
               "Android Challenge 1–12",
               "allsafe-android-writeup",
             ],
-            ["RESEARCH / WEB3", "Ethernaut Level 0–40", "ethernaut-all-clear"],
+            ["스마트 컨트랙트", "Ethernaut Level 0–40", "ethernaut-all-clear"],
             [
-              "RESEARCH / FUZZING",
+              "퍼징",
               "Fuzzing101: 크래시에서 원인까지",
               "fuzzing101-three-exercises",
             ],
@@ -287,7 +263,7 @@ export default async function Home() {
       </section>
       <section id="contact" className="contact-section">
         <div className="shell">
-          <span className="eyebrow">NEXT TRACE, TOGETHER.</span>
+          <span className="eyebrow">다음 경험을 함께</span>
           <h2>함께 풀어볼 문제가 있나요?</h2>
           <a className="contact-email" href="mailto:iljae627@gmail.com">
             iljae627@gmail.com <ArrowUpRight />

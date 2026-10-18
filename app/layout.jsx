@@ -25,7 +25,7 @@ export default function Layout({ children }) {
         {children}
         <footer className="footer shell">
           <Link href="/" className="wordmark">
-            iljae<span>®</span>
+            정일재<span>.</span>
           </Link>
           <p>작은 단서에서 시작해, 끝까지 이해하기.</p>
           <div>

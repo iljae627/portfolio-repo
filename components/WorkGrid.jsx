@@ -31,7 +31,7 @@ export default function WorkGrid({ projects }) {
             </button>
           ))}
         </div>
-        <span className="mono muted">SELECTED / 2026</span>
+        <span className="mono muted">관심에서 경험으로, 여섯 가지 작업</span>
       </div>
       <div className="project-grid" aria-live="polite">
         {visible.map((p) => (
