@@ -28,14 +28,14 @@ export default function Header() {
         >
           {[
             ["/", "홈"],
-            ["/#work", "프로젝트"],
+            ["/projects", "프로젝트"],
             ["/archive", "아카이브"],
-            ["/#about", "소개"],
+            ["/about", "소개"],
           ].map(([href, label]) => (
             <Link
               key={href}
               href={href}
-              aria-current={path === href ? "page" : undefined}
+              aria-current={path === href || (href === "/projects" && path.startsWith("/work/")) ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
               {label}

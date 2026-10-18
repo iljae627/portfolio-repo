@@ -24,12 +24,8 @@ export default function Layout({ children }) {
         <Header />
         {children}
         <footer className="footer shell">
-          <Link href="/" className="wordmark">
-            정일재<span>.</span>
-          </Link>
-          <p>작은 단서에서 시작해, 끝까지 이해하기.</p>
           <div>
-            <span>© 2026 JUNG ILJAE</span>
+            <span>© 2026 정일재</span>
             <Link href="/sources">출처 및 기록</Link>
             <Link href="/admin">관리자 ↗</Link>
           </div>

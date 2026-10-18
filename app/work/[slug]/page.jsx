@@ -17,7 +17,7 @@ export default async function Project({ params }) {
   if (!p) notFound();
   return (
     <main id="main" className="shell detail section">
-      <Link href="/#work" className="text-link">
+      <Link href="/projects" className="text-link">
         <ArrowLeft size={16} /> 모든 프로젝트
       </Link>
       <div className="detail-hero">
