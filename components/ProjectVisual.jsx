@@ -26,6 +26,12 @@ const captions = {
   web: ["InfoSec Hub", "배운 지식을 하나의 서비스로"],
 };
 export default function ProjectVisual({ project }) {
+  if (project.visual === "protocol") return (
+    <div className="project-visual with-image protocol">
+      <div className="project-image protocol-image"><Image src="/images/portfolio/mystery-gift-flow.png" alt="3DS와 DNS·인증·이상한소포 배포 서버 사이 통신 흐름도" fill sizes="(max-width: 700px) calc(100vw - 40px), 540px" /></div>
+      <div className="project-image-caption"><span>프로젝트의 출발점 · manatails 분석 글</span><strong>DS / 3DS · 배포 통신의 흐름</strong></div>
+    </div>
+  );
   if (project.visual === "android") return (
     <div className="project-visual with-image android">
       <div className="project-image">
