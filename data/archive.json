@@ -1,5 +1,16 @@
 [
   {
+    "id": "manual-collector-team-project",
+    "title": "Collector · npm 공격 검증 도구 — 동아리 여름방학 팀 프로젝트",
+    "url": "https://iljae627-portfolio.vercel.app/work/collector",
+    "source": "활동 기록",
+    "category": "Development",
+    "tags": ["npm", "Sigstore", "Rekor", "팀 프로젝트", "여름방학"],
+    "date": "2026-10-19",
+    "summary": "동아리 여름방학에 진행한 npm 공격 검증 도구 팀 프로젝트. Sigstore·Rekor 수집기 개발을 맡았으며 이후 작업은 팀원들과 함께 진행했습니다. 활동 기간은 여름방학, 이 기록의 정리일은 2026-10-19입니다.",
+    "thumbnail": null
+  },
+  {
     "id": "repo-my-app2",
     "title": "my-app2",
     "url": "https://github.com/iljae627/my-app2",

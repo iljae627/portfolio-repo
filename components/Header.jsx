@@ -3,15 +3,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
+import HeroPokemon from './HeroPokemon';
 export default function Header() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   return (
     <header className="header">
       <div className="shell nav">
-        <Link href="/" className="wordmark" onClick={() => setOpen(false)}>
+        <div className="nav-brand"><Link href="/" className="wordmark" onClick={() => setOpen(false)}>
           정일재<span>.</span>
-        </Link>
+        </Link><HeroPokemon compact /></div>
         <button
           className="menu-toggle"
           aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
@@ -35,7 +36,7 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              aria-current={path === href || (href === "/projects" && path.startsWith("/work/")) ? "page" : undefined}
+              aria-current={path === href ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
               {label}
