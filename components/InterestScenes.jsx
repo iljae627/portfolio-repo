@@ -8,7 +8,7 @@ import SceneCanvas from "./SceneCanvas";
 const scenes = [
   {id: "forensics", label: "DIGITAL FORENSICS", title: "흔적을 잇다.", image: "/images/interests/forensics.png", alt: "저장장치와 확대 렌즈로 디지털 포렌식을 표현한 컨셉 이미지", href: "/work/digital-forensics"},
   {id: "android", label: "ANDROID SECURITY", title: "앱의 경계를 보다.", image: "/images/interests/android.png", alt: "스마트폰과 안드로이드 로봇으로 모바일 보안을 표현한 컨셉 이미지", href: "/work/android-security"},
-  {id: "reversing", label: "REVERSE ENGINEERING", title: "안쪽의 원리를 읽다.", image: "/images/interests/reversing.png", alt: "층으로 분리된 프로세서와 회로로 리버스 엔지니어링을 표현한 컨셉 이미지", href: "/work/defcon-bbbq"},
+  {id: "reversing", label: "REVERSE ENGINEERING", title: "안쪽의 원리를 읽다.", image: "/images/interests/reversing.png", alt: "층으로 분리된 프로세서와 회로로 리버스 엔지니어링을 표현한 컨셉 이미지", href: "/projects"},
 ];
 const clamp = value => Math.min(1, Math.max(0, value));
 
@@ -57,7 +57,7 @@ export default function InterestScenes() {
       {scenes.map(scene => <section className={`interest-scene scene-${scene.id}`} id={scene.id} key={scene.id} aria-labelledby={`${scene.id}-title`}>
         <div className="interest-stage">
           <div className="interest-art"><Image src={scene.image} alt={scene.alt} fill sizes="(max-width: 700px) 165vw, 100vw" /><SceneCanvas kind={scene.id} control={controls.current[scene.id]} /></div>
-          <div className="interest-copy"><span>{scene.label}</span><h2 id={`${scene.id}-title`}>{scene.title}</h2></div>
+          <div className="interest-copy"><span>{scene.label}</span>{scene.id === 'forensics' ? <h1 id={`${scene.id}-title`}>{scene.title}</h1> : <h2 id={`${scene.id}-title`}>{scene.title}</h2>}</div>
           <Link className="interest-visit" href={scene.href}>기록 보기 <ArrowUpRight size={15} /></Link>
         </div>
       </section>)}

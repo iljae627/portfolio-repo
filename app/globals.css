@@ -562,3 +562,22 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 .interest-copy { opacity: calc(var(--scene-reveal) * (1 - clamp(0, (var(--scene-progress) - .08) * 4.5, 1))); }
 .interest-stage::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; background: rgb(53 91 138 / 35%); transform: scaleX(var(--scene-progress)); transform-origin: left; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .interest-copy { opacity: 1; } .interest-stage::after { display: none; } }
+
+/* The scene is the opening screen; the mascot lives quietly in the navigation. */
+.nav-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.header-pokemon.pokemon-switch { width: 40px; height: 40px; flex-shrink: 0; margin: 0; padding: 2px; border-radius: 12px; }
+.header-pokemon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.header-pokemon:hover { background: #f4f6f9; }
+.header-pokemon:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.interest-copy h1 { font-size: clamp(37px, 4.3vw, 66px); font-weight: 750; line-height: 1.25; color: #191f28; text-wrap: balance; }
+.collection-description { color: #7c8794; font-size: 15px; line-height: 1.8; margin-top: 14px; }
+.project-visual.trading { color: #326e60; background: #eaf5ef; }
+.project-visual.studio { color: #6d66a1; background: #f0eef9; }
+.project-visual.rng { color: #8b6b3e; background: #faf3e5; }
+.project-visual.collector { color: #486b94; background: #edf3fa; }
+@media (max-width: 700px) {
+ .nav-brand { gap: 6px; }
+ .header-pokemon.pokemon-switch { width: 34px; height: 34px; }
+ .interest-copy h1 { font-size: clamp(32px, 8vw, 42px); }
+ .collection-description { font-size: 13px; }
+}

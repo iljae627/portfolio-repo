@@ -7,8 +7,7 @@ export default function WorkGrid({ projects }) {
   const [filter, setFilter] = useState("all");
   const tabs = [
     ["all", "전체"],
-    ["research", "보안 연구"],
-    ["competition", "대회"],
+    ["research", "계속 공부 중"],
     ["development", "개발"],
   ];
   const visible = projects.filter((p) => filter === "all" || p.type === filter);
@@ -39,7 +38,7 @@ export default function WorkGrid({ projects }) {
             <div className="project-info">
               <div className="meta">
                 <span>{p.category}</span>
-                <span>{p.date}</span>
+                <span>{p.status}</span>
               </div>
               <h3>
                 {p.name}
