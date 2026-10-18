@@ -510,7 +510,7 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 .interest-scroll-cue { display: inline-flex; align-items: center; justify-content: center; color: #9ca7b4; margin-top: 28px; padding: 8px; }
 .interest-scroll-cue:hover { color: #2463eb; }
 .interest-scenes { position: relative; isolation: isolate; }
-.interest-scene { position: relative; height: 170svh; --scene-reveal: 1; --scene-progress: 0; scroll-margin-top: 0; }
+.interest-scene { position: relative; height: 360svh; --scene-reveal: 1; --scene-progress: 0; scroll-margin-top: 0; }
 .interest-stage { position: sticky; top: 76px; height: calc(100svh - 76px); min-height: 500px; overflow: hidden; background: var(--scene-color); clip-path: inset(0 calc((1 - var(--scene-reveal)) * 2%) round calc((1 - var(--scene-reveal)) * 28px)); }
 .scene-forensics { --scene-color: #f1ede5; }
 .scene-android { --scene-color: #edf6ef; }
@@ -531,7 +531,7 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
  html:has(.scroll-home) { scroll-padding-top: 66px; }
  .scroll-home .minimal-home { min-height: calc(100svh - 66px); padding-bottom: 55px; }
  .interest-scroll-cue { margin-top: 18px; }
- .interest-scene { height: 145svh; scroll-margin-top: 0; }
+ .interest-scene { height: 310svh; scroll-margin-top: 0; }
  .interest-stage { top: 66px; height: calc(100svh - 66px); min-height: 500px; }
  .interest-art { inset: 0; }
  .interest-art img { object-fit: cover; object-position: 58% 50%; }
@@ -549,3 +549,16 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
  .interest-copy { opacity: 1; }
  .interest-progress { display: none; }
 }
+
+/* Geometry, rather than a camera pan over a flat image, owns the motion. */
+.interest-art { transform: none; will-change: auto; }
+.scene-webgl { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; touch-action: pan-y; }
+.scene-webgl.is-ready { opacity: 1; }
+.scene-webgl canvas { display: block; width: 100%; height: 100%; }
+.interest-art:has(.scene-webgl.is-ready) > img { opacity: 0; }
+.interest-copy, .interest-visit { pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .scene-webgl { transition: none; } }
+
+.interest-copy { opacity: calc(var(--scene-reveal) * (1 - clamp(0, (var(--scene-progress) - .08) * 4.5, 1))); }
+.interest-stage::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; background: rgb(53 91 138 / 35%); transform: scaleX(var(--scene-progress)); transform-origin: left; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .interest-copy { opacity: 1; } .interest-stage::after { display: none; } }
