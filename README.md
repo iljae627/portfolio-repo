@@ -1,0 +1,121 @@
+# 정일재 — Security, traced.
+
+공개 활동을 근거로 재구성한 반응형 보안 포트폴리오입니다. Vercel에 배포하는 **Next.js App Router** 프로젝트입니다.
+
+## 시작
+
+Node.js 22 이상에서 프로젝트 폴더를 열고 실행합니다. 별도 서비스 설정 없이도 포트폴리오, 프로젝트 상세, 전체 아카이브를 사용할 수 있습니다.
+
+```powershell
+npm ci
+npm run dev
+```
+
+브라우저: http://localhost:3000
+
+```powershell
+npm test
+npm run build
+npm start
+```
+
+## 사용 기술과 실제 역할
+
+| 기술       | 사용 위치                                                                                            |
+| ---------- | ---------------------------------------------------------------------------------------------------- |
+| HTML5      | `app/layout.jsx`의 html/body, header/nav/main/section/article/footer 등 시맨틱 HTML을 React가 렌더링 |
+| CSS        | `app/globals.css`: 레이아웃, 반응형, 접근성, 인쇄 및 모션 감소 설정                                  |
+| JavaScript | `.js`, `.jsx`, `.mjs`: 검색, 필터, 페이지네이션, 입력 검증, API                                      |
+| React      | 컴포넌트, 검색 및 필터 상태, 관리자 폼                                                               |
+| Next.js    | App Router, 프로젝트 상세 SSG, 서버 컴포넌트, API Route Handler, 메타데이터 및 sitemap               |
+| Auth       | Auth.js (next-auth v5) + GitHub OAuth, MongoDB 세션, 서버에서 관리자 GitHub 고유 ID 검사                 |
+| MongoDB    | `activities` 게시물, 인증의 users/sessions/accounts/verification_tokens 컬렉션                       |
+| Vercel     | Next.js 기본 빌드 및 Node.js 서버 함수 배포                                                          |
+
+## 페이지
+
+- `/`: 소개, 대표 작업 6개, 분야별 필터, 분석 방식, 이력, 기술 글 및 연락처.
+- `/work/[slug]`: 문제·접근 방법·결과·본인 역할·원문 근거.
+- `/archive`: 기술 블로그 51건 + 네이버 101건 + 공개 저장소 17개. 키워드·출처·분야 필터, 페이지 이동.
+- `/sources`: 출처와 수집 기준 및 표현 원칙.
+- `/admin`: GitHub 로그인 및 새 활동 게시.
+- `/api/activities`: 공개 조회 GET, 관리자 전용 게시 POST.
+- `/api/auth/*`: Auth.js OAuth 및 세션 엔드포인트.
+
+## Vercel 배포
+
+1. 이 폴더의 소스를 새 GitHub 저장소에 올립니다. `node_modules`, `.next`, `.env.local`은 올리지 않습니다. 저장소: https://github.com/iljae627/portfolio-repo
+2. Vercel의 Add New → Project에서 저장소를 가져옵니다. Framework: **Next.js**. Root Directory: 이 프로젝트의 `package.json`이 있는 폴더. Build Command: `npm run build`, Install Command: `npm ci`. Output Directory는 기본값을 유지합니다. 정적 export를 사용하면 인증·MongoDB API가 작동하지 않습니다.
+3. 도메인을 확인하고 `NEXT_PUBLIC_SITE_URL=https://실제도메인`을 설정합니다. 공개 페이지만 사용할 때도 메타데이터·sitemap의 올바른 주소를 위해 필요합니다.
+4. 다음 관리자 설정을 완료한 후 재배포합니다. Vercel 프로젝트가 이미 있다면 그 프로젝트의 Git 저장소·Root Directory를 확인해서 연결합니다.
+
+### MongoDB Atlas
+
+1. Atlas에서 데이터베이스를 생성하거나 기존 개발용 데이터베이스를 선택합니다.
+2. 해당 DB에만 `readWrite` 권한을 가진 database user를 생성합니다.
+3. Connect → Drivers에서 연결 문자열을 가져와 Vercel의 **서버 전용** `MONGODB_URI`에 저장합니다. 비밀번호를 저장소나 채팅에 넣지 않습니다.
+4. Atlas Network Access에서 Vercel 함수가 연결할 수 있는 네트워크 정책을 설정합니다. 고정 아웃바운드 IP가 있으면 해당 범위만 허용합니다. 일반 서버리스 동적 IP 구성에서는 Atlas의 연결 안내와 조직 정책을 확인합니다.
+5. `MONGODB_DB=iljae_portfolio`를 설정합니다. Atlas는 트랜잭션이 가능한 replica set이므로 Auth.js MongoDB adapter에 연결된 MongoClient를 전달하는 현재 구성을 유지합니다.
+
+### GitHub OAuth
+
+1. GitHub Settings → Developer settings → OAuth Apps → New OAuth App.
+2. Homepage URL: `https://실제도메인`.
+3. Authorization callback URL: **`https://실제도메인/api/auth/callback/github`**.
+4. Client ID/Secret을 Vercel 환경변수에 저장합니다.
+5. `ADMIN_GITHUB_ID`는 사용자명 `iljae627`이 아니라 GitHub의 **숫자 고유 ID**입니다. [공개 프로필 API](https://api.github.com/users/iljae627)의 `id`를 문자열로 입력합니다. 계정 이름이 같다는 이유로 권한을 부여하지 않습니다.
+6. `AUTH_SECRET`은 32바이트 이상 난수로 직접 생성합니다. 예: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`.
+7. `AUTH_URL=https://실제도메인`을 설정합니다. callback URL과 origin이 정확히 일치해야 합니다.
+
+### 환경변수
+
+| 이름                   | 값 / 용도                                   |
+| ---------------------- | ------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | 공개 사이트 절대 URL. 빌드 전 설정          |
+| `MONGODB_URI`          | Atlas 연결 문자열, 서버 전용                |
+| `MONGODB_DB`           | `iljae_portfolio`                           |
+| `AUTH_SECRET`   | 충분히 긴 난수, 서버 전용                   |
+| `AUTH_URL`      | 로그인·게시가 일어나는 정확한 사이트 origin |
+| `AUTH_GITHUB_ID`     | OAuth App Client ID                         |
+| `AUTH_GITHUB_SECRET` | OAuth App Client Secret, 서버 전용          |
+| `ADMIN_GITHUB_ID`      | 소유자 GitHub 숫자 ID                       |
+
+로컬에서는 `.env.example`을 `.env.local`로 복사해 값을 입력합니다. Development/Preview/Production은 별도로 설정하고 Preview에 운영 DB를 공유하지 않는 것을 권장합니다. Preview OAuth 검증은 고정 preview domain과 별도 OAuth App을 사용합니다. 비밀 값에 `NEXT_PUBLIC_` 접두사를 붙이면 안 됩니다.
+
+Vercel CLI를 사용하는 경우, 로컬 파일을 덮어쓸 수 있으므로 기존 설정을 보존한 뒤 `vercel env pull .env.local`을 사용합니다. 환경변수 추가 후에는 다시 배포해야 합니다.
+
+### DB 인덱스
+
+`.env.local`에 연결 정보를 저장한 후 실행합니다.
+
+```powershell
+npm run db:indexes
+```
+
+activities ID, 공개 여부·날짜, OAuth 계정, 이메일, 세션 토큰 등에 인덱스를 생성하고 세션·인증 만료 데이터에 TTL 인덱스를 설정합니다. MongoDB adapter는 별도 SQL migration을 요구하지 않습니다.
+
+## 활동 추가와 콘텐츠 수정
+
+관리자 로그인 → 제목, 요약, 날짜, 분야, HTTPS 근거 URL, 태그 작성 → 활동 게시. 저장한 글은 MongoDB `activities`에 들어가고 공개 아카이브에 반영됩니다. 기본 169개 공개 기록은 `data/archive.json` 스냅샷으로 제공됩니다. DB가 없거나 읽기에 실패해도 이 기록은 표시됩니다.
+
+- 대표 작업 및 이력: `lib/projects.js`.
+- 소개 및 메인 구성: `app/page.jsx`.
+- 전체 기록: `data/archive.json`.
+- 수집 정보: `data/source-snapshot.json`.
+- 색·레이아웃·반응형: `app/globals.css`.
+
+원본 블로그 자동 동기화는 구현 범위에 포함하지 않았습니다. 기본 기록을 갱신할 때 JSON을 검토해 수정하거나, 새 활동을 관리자에서 게시합니다. 관리자 UI는 **추가 게시**를 지원하며 기존 스냅샷 편집·삭제 UI는 제공하지 않습니다.
+
+## 검증
+
+- Next.js 프로덕션 빌드 성공.
+- 콘텐츠 무결성 및 입력 검증 테스트 7개 통과.
+- 임시 로컬 MongoDB replica set + 합성 세션으로 인증·권한·입력·쓰기·조회 통합 검사 10개 통과.
+- 브라우저: 개발 필터, 검색, 빈 검색 결과, 초기화, 페이지네이션, 모바일 메뉴 확인.
+- 실제 GitHub OAuth 왕복 및 Atlas 연결은 **실제 환경변수를 설정한 뒤** 검증해야 합니다. 합성 세션 테스트가 OAuth 제공자 검증을 대신하지 않습니다.
+
+Google Fonts는 원격 스타일시트이며 연결 실패 시 시스템 폰트로 표시됩니다. 기본 포트폴리오의 콘텐츠 조회는 외부 블로그의 실시간 응답에 의존하지 않습니다.
+
+## 자료 범위
+
+2026-10-18 기준 공개 자료를 사용했습니다. 기술 블로그 51개 글 본문, 네이버 101개 글 본문, GitHub 17개 공개 저장소의 메타데이터와 주요 README, 기존 포트폴리오를 확인했습니다. 팀 성과와 개인 기여, 교육 실습과 신규 취약점 제보를 구분했습니다. 비공개 활동은 임의로 추가하지 않았습니다.
