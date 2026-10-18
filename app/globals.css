@@ -503,3 +503,49 @@ svg { flex-shrink: 0; }
  .footer { padding-block: 19px; } .footer > div { font-size: 9px; gap: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { .character-float { animation: none; will-change: auto; } .thumbnail-inner { transition: none; } }
+
+/* Image-led interest scenes: each frame follows the natural page scroll. */
+html:has(.scroll-home) { scroll-padding-top: 76px; }
+.scroll-home .minimal-home { min-height: calc(100svh - 76px); position: relative; padding-bottom: 80px; }
+.interest-scroll-cue { display: inline-flex; align-items: center; justify-content: center; color: #9ca7b4; margin-top: 28px; padding: 8px; }
+.interest-scroll-cue:hover { color: #2463eb; }
+.interest-scenes { position: relative; isolation: isolate; }
+.interest-scene { position: relative; height: 170svh; --scene-reveal: 1; --scene-progress: 0; scroll-margin-top: 0; }
+.interest-stage { position: sticky; top: 76px; height: calc(100svh - 76px); min-height: 500px; overflow: hidden; background: var(--scene-color); clip-path: inset(0 calc((1 - var(--scene-reveal)) * 2%) round calc((1 - var(--scene-reveal)) * 28px)); }
+.scene-forensics { --scene-color: #f1ede5; }
+.scene-android { --scene-color: #edf6ef; }
+.scene-reversing { --scene-color: #edf0fa; }
+.interest-art { position: absolute; inset: 0; transform: translate3d(0, calc(var(--scene-progress) * -2%), 0) scale(calc(1.02 + var(--scene-progress) * .07)); will-change: transform; }
+.interest-art img { object-fit: cover; object-position: 50% 57%; }
+.interest-copy { position: absolute; left: 24px; right: 24px; top: clamp(44px, 9svh, 100px); text-align: center; z-index: 1; opacity: var(--scene-reveal); transform: translate3d(0, calc((1 - var(--scene-reveal)) * 35px - var(--scene-progress) * 18px), 0); }
+.interest-copy > span { display: block; color: #5c656f; font-size: 10px; letter-spacing: .15em; font-weight: 600; margin-bottom: 12px; }
+.interest-copy h2 { font-size: clamp(37px, 4.3vw, 66px); font-weight: 750; line-height: 1.25; color: #191f28; text-wrap: balance; }
+.interest-visit { position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 30px; background: rgb(255 255 255 / 80%); backdrop-filter: blur(12px); color: #354154; font-size: 12px; font-weight: 600; z-index: 2; white-space: nowrap; }
+.interest-visit:hover { background: #fff; color: #2463eb; }
+.interest-progress { position: fixed; left: 24px; top: 50%; transform: translateY(-50%); z-index: 15; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.interest-progress.is-visible { opacity: 1; pointer-events: auto; }
+.interest-progress a { width: 25px; height: 25px; display: flex; align-items: center; justify-content: flex-start; }
+.interest-progress span { display: block; width: 11px; height: 2px; background: #9ca3aa; transition: width .2s, background .2s; }
+.interest-progress a[aria-current] span { width: 20px; background: #252d39; }
+@media (max-width: 700px) {
+ html:has(.scroll-home) { scroll-padding-top: 66px; }
+ .scroll-home .minimal-home { min-height: calc(100svh - 66px); padding-bottom: 55px; }
+ .interest-scroll-cue { margin-top: 18px; }
+ .interest-scene { height: 145svh; scroll-margin-top: 0; }
+ .interest-stage { top: 66px; height: calc(100svh - 66px); min-height: 500px; }
+ .interest-art { inset: 0; }
+ .interest-art img { object-fit: cover; object-position: 58% 50%; }
+ .scene-reversing .interest-art img { object-position: 50% 50%; }
+ .interest-copy { top: 62px; left: 22px; right: 22px; }
+ .interest-copy h2 { font-size: clamp(32px, 8vw, 42px); }
+ .interest-copy > span { font-size: 9px; letter-spacing: .1em; }
+ .interest-visit { bottom: 35px; font-size: 11px; }
+ .interest-progress { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .interest-scene { height: auto; }
+ .interest-stage { position: relative; top: auto; clip-path: none; }
+ .interest-art, .interest-copy { transform: none; will-change: auto; }
+ .interest-copy { opacity: 1; }
+ .interest-progress { display: none; }
+}
