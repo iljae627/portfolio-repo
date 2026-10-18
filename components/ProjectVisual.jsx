@@ -7,6 +7,8 @@ import {
   Code2,
   Smartphone,
 } from "lucide-react";
+import Image from "next/image";
+import { media } from "@/lib/media";
 const icons = {
   response: Radio,
   bytecode: Terminal,
@@ -24,6 +26,14 @@ const captions = {
   web: ["InfoSec Hub", "배운 지식을 하나의 서비스로"],
 };
 export default function ProjectVisual({ project }) {
+  if (project.visual === "android") return (
+    <div className="project-visual with-image android">
+      <div className="project-image">
+        <Image src={media.hextree.src} alt={media.hextree.alt} fill sizes="(max-width: 700px) calc(100vw - 40px), (max-width: 1200px) 45vw, 540px" />
+      </div>
+      <div className="project-image-caption"><span>실제 학습 기록</span><strong>HexTree Android Track · 14 / 14</strong></div>
+    </div>
+  );
   const Icon = icons[project.visual] || Code2;
   const [headline, caption] = captions[project.visual] || [project.name, project.category];
   return (

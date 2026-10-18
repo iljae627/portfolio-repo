@@ -1,5 +1,6 @@
 import snapshot from "@/data/source-snapshot.json";
 import { getSyncStatus } from "@/lib/sync-status";
+import { media } from "@/lib/media";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "출처 및 기록" };
 export default async function Sources() {
@@ -62,6 +63,9 @@ export default async function Sources() {
         사이버 수사·디지털 포렌식 분야의 진로 관심을 반영했습니다. 학번·거주지
         상세 등 소개에 필요하지 않은 정보는 게시하지 않았습니다.
       </p>
+      <h2>이미지 출처</h2>
+      <p>이 포트폴리오의 사진과 화면 이미지는 소유자의 기술 블로그에 게시한 원본 자료를 사용했습니다. 실제 실습 캡처, 구현 코드와 참관 사진을 구분하며, 화면 속 서비스의 로고와 UI 권리는 각 제공자에게 있습니다. 이미지는 화면 크기에 맞게 최적화해 제공합니다.</p>
+      <ul>{Object.values(media).map(item => <li key={item.src}><a href={item.page} target="_blank" rel="noreferrer">{item.label}</a> — {item.credit} · <a href={item.original} target="_blank" rel="noreferrer">이미지 원본</a></li>)}</ul>
     </main>
   );
 }

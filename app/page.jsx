@@ -1,4 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
+import ActivityGallery from "@/components/ActivityGallery";
+import { media } from "@/lib/media";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -44,6 +47,7 @@ export default async function Home() {
             </div>
           </div>
         </div>
+        <ActivityGallery />
         <div className="hero-base">
           <div>
             <a
@@ -238,25 +242,29 @@ export default async function Home() {
               "모바일 보안",
               "Android Challenge 1–12",
               "allsafe-android-writeup",
+              "allsafe",
             ],
-            ["스마트 컨트랙트", "Ethernaut Level 0–40", "ethernaut-all-clear"],
+            ["스마트 컨트랙트", "Ethernaut Level 0–40", "ethernaut-all-clear", "ethernaut"],
             [
               "퍼징",
               "Fuzzing101: 크래시에서 원인까지",
               "fuzzing101-three-exercises",
+              "fuzzing",
             ],
-          ].map(([category, title, slug]) => (
+          ].map(([category, title, slug, image]) => (
             <a
               key={slug}
               href={`https://iljae627.github.io/posts/${slug}/`}
               target="_blank"
               rel="noreferrer"
             >
-              <span className="mono muted">{category}</span>
-              <h3>
-                {title}
-                <ArrowUpRight size={18} />
-              </h3>
+              <div className={`journal-thumb journal-thumb-${image}`}>
+                <Image src={media[image].src} alt={media[image].alt} fill sizes="(max-width: 700px) 90px, 104px" />
+              </div>
+              <div className="journal-copy">
+                <span className="mono muted">{category}</span>
+                <h3>{title}<ArrowUpRight size={18} /></h3>
+              </div>
             </a>
           ))}
         </div>
