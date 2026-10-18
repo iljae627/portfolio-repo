@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, signOut } from "next-auth/react";
 import { KeyRound, ArrowUpRight } from "lucide-react";
+import SyncPanel from "@/components/SyncPanel";
 export default function AdminPanel({ allowed }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -71,6 +72,7 @@ export default function AdminPanel({ allowed }) {
               로그아웃
             </button>
           </div>
+          <SyncPanel />
           <form onSubmit={submit} className="activity-form">
             <label>
               활동 제목
@@ -134,7 +136,7 @@ export default function AdminPanel({ allowed }) {
           <h2>관리자 로그인</h2>
           <p>
             등록된 GitHub 계정의 고유 ID를 서버에서 확인합니다. 다른 계정은
-            활동을 게시할 수 없습니다.
+            활동을 게시하거나 동기화를 실행할 수 없습니다.
           </p>
           {
             <button className="button dark" onClick={login} disabled={busy}>
