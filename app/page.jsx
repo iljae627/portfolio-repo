@@ -10,8 +10,12 @@ import {
 import TraceVisual from "@/components/TraceVisual";
 import WorkGrid from "@/components/WorkGrid";
 import { projects, milestones } from "@/lib/projects";
-import snapshot from "@/data/source-snapshot.json";
-export default function Home() {
+import { getArchive } from "@/lib/content";
+export const dynamic = "force-dynamic";
+export default async function Home() {
+  const { items } = await getArchive();
+  const technicalPosts = items.filter(item => item.source === "기술 블로그").length;
+  const naverPosts = items.filter(item => item.source === "네이버 블로그").length;
   return (
     <main id="main">
       <section className="hero shell">
@@ -115,7 +119,7 @@ export default function Home() {
           <div>
             <span className="mono">03 / DOCUMENTATION</span>
             <p>
-              <strong>{snapshot.technicalPosts}</strong>
+              <strong>{technicalPosts}</strong>
               <span>편</span>
             </p>
             <Link href="/archive?source=기술 블로그">
@@ -125,7 +129,7 @@ export default function Home() {
           <div>
             <span className="mono">04 / CONSISTENCY</span>
             <p>
-              <strong>{snapshot.naverPostTitles}</strong>
+              <strong>{naverPosts}</strong>
               <span>편</span>
             </p>
             <Link href="/archive?source=네이버 블로그">

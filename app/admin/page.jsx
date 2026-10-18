@@ -1,6 +1,7 @@
 import { authConfigured } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import AdminPanel from "@/components/AdminPanel";
+import SyncPanel from "@/components/SyncPanel";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "활동 관리",
@@ -53,7 +54,10 @@ export default async function Admin({ searchParams }) {
           <p>MongoDB 연결 및 OAuth 환경변수를 확인한 뒤 다시 시도하세요.</p>
         </div>
       ) : (
-        <AdminPanel allowed={allowed} />
+        <>
+          {allowed && <SyncPanel />}
+          <AdminPanel allowed={allowed} />
+        </>
       )}
     </main>
   );
