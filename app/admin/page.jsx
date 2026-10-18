@@ -6,7 +6,8 @@ export const metadata = {
   title: "활동 관리",
   robots: { index: false, follow: false },
 };
-export default async function Admin() {
+export default async function Admin({ searchParams }) {
+  const params = await searchParams;
   const configured = authConfigured();
   let allowed = false;
   let error = false;
@@ -23,6 +24,13 @@ export default async function Admin() {
       <p className="muted">
         GitHub 계정으로 로그인하고 새로운 활동을 아카이브에 추가합니다.
       </p>
+      {params?.error && (
+        <p role="alert">
+          {params.error === "AccessDenied"
+            ? "등록된 관리자 GitHub 계정으로 로그인해 주세요."
+            : "로그인을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요."}
+        </p>
+      )}
       {!configured ? (
         <div className="setup-notice">
           <h2>연결 설정이 필요합니다.</h2>
@@ -32,8 +40,8 @@ export default async function Admin() {
             있습니다.
           </p>
           <p>
-            설정 항목: MONGODB_URI, AUTH_SECRET, AUTH_URL,
-            AUTH_GITHUB_ID, AUTH_GITHUB_SECRET, ADMIN_GITHUB_ID
+            설정 항목: MONGODB_URI, AUTH_SECRET, AUTH_URL, AUTH_GITHUB_ID,
+            AUTH_GITHUB_SECRET, ADMIN_GITHUB_ID
           </p>
           <a href="/archive" className="text-link">
             공개 아카이브 보기 ↗

@@ -131,20 +131,18 @@ export default function AdminPanel({ allowed }) {
         </>
       ) : (
         <div className="setup-notice">
-          <h2>
-            관리자 로그인
-          </h2>
+          <h2>관리자 로그인</h2>
           <p>
             등록된 GitHub 계정의 고유 ID를 서버에서 확인합니다. 다른 계정은
             활동을 게시할 수 없습니다.
           </p>
-          {(
+          {
             <button className="button dark" onClick={login} disabled={busy}>
               <KeyRound size={18} />
               {busy ? "연결 중…" : "GitHub로 로그인"}
               <ArrowUpRight size={16} />
             </button>
-          )}
+          }
         </div>
       )}
       <p role="status" aria-live="polite">
