@@ -10,18 +10,8 @@ export const metadata = {
 export default async function Archive() {
   const { items } = await getArchive();
   return (
-    <main id="main" className="shell section archive-page">
-      <span className="eyebrow">활동 아카이브</span>
-      <div className="archive-title">
-        <h1>
-          호기심이 남긴 기록<span className="lime-dot">.</span>
-        </h1>
-        <p>
-          기술 분석과 대회 회고부터 전공 공부까지.
-          <br />
-          배움의 과정을 연결합니다.
-        </p>
-      </div>
+    <main id="main" className="shell collection-page archive-page">
+      <div className="collection-heading"><span>ARCHIVE</span><h1>활동 아카이브.</h1></div>
       <Suspense fallback={<p>아카이브를 불러오는 중입니다.</p>}>
         <ArchiveExplorer items={items} />
       </Suspense>

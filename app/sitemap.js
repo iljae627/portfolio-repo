@@ -3,7 +3,9 @@ export default function sitemap() {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return [
     "/",
+    "/projects",
     "/archive",
+    "/about",
     "/sources",
     ...projects.map((p) => `/work/${p.slug}`),
   ].map((path) => ({
