@@ -4,16 +4,16 @@ import * as T from 'three';
 export function brushedMetal(color) {
   let map = null;
   if (typeof document !== 'undefined') {
-    const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 256;
+    const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
     const ctx = canvas.getContext('2d');
-    for (let y=0; y<256; y++) {
-      const value = 130 + Math.round(Math.sin(y*8.23)*13 + Math.sin(y*.73)*6);
-      ctx.fillStyle=`rgb(${value} ${value} ${value})`; ctx.fillRect(0,y,128,1);
+    for (let y=0; y<512; y++) {
+      const value = 182 + Math.round(Math.sin(y*8.23)*8 + Math.sin(y*.73)*4);
+      ctx.fillStyle=`rgb(${value} ${value} ${value})`; ctx.fillRect(0,y,512,1);
     }
-    map=new T.CanvasTexture(canvas); map.wrapS=map.wrapT=T.RepeatWrapping; map.repeat.set(2,3);
+    map=new T.CanvasTexture(canvas); map.wrapS=map.wrapT=T.RepeatWrapping; map.repeat.set(1,2);
   }
-  return new T.MeshPhysicalMaterial({color,metalness:.96,roughness:.29,roughnessMap:map,
-    clearcoat:.2,clearcoatRoughness:.25,anisotropy:.45,anisotropyRotation:Math.PI/2});
+  return new T.MeshPhysicalMaterial({color,metalness:1,roughness:.24,roughnessMap:map,
+    clearcoat:.35,clearcoatRoughness:.16,anisotropy:.7,anisotropyRotation:Math.PI/2});
 }
 
 export function phoneDisplay() {
