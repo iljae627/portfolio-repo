@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Box3} from 'three';
-import {buildAndroid,buildForensics,buildWeb3,buildFuzzing} from '../components/interest-models.js';
+import {buildAndroid,buildForensics,buildWeb3,buildFuzzing,makeModel} from '../components/interest-models.js';
 import {sampleMotion,SCENE_FRAMES} from '../lib/scene-motion.mjs';
 
 test('phone contains no transmissive film and retains a flat display',()=>{
@@ -49,5 +49,20 @@ test('new models reconstruct identical mesh transforms when reversing',()=>{
  for(const [kind,build] of [['web3',buildWeb3],['fuzzing',buildFuzzing]]){
   const m=build();const snapshot=()=>{const result=[];m.root.traverse(o=>{if(o.isMesh)result.push([...o.position.toArray(),...o.rotation.toArray().slice(0,3)]);});return result;};
   m.update(sampleMotion(kind,.6));const expected=snapshot();m.update(sampleMotion(kind,1));m.update(sampleMotion(kind,.6));assert.deepEqual(snapshot(),expected);
+ }
+});
+
+test('optical housings use physical transmission without alpha fading',()=>{
+ for(const kind of ['forensics','reversing','web3','fuzzing']){
+  let optical=0;makeModel(kind).root.traverse(o=>{if(o.isMesh&&o.material.transmission>0){optical++;assert.equal(o.material.opacity,1);assert.equal(o.material.transparent,false);assert.ok(o.material.thickness>0);}});assert.ok(optical>0,kind);
+ }
+});
+test('every detailed model has finite bounded geometry when assembled and exploded',()=>{
+ for(const kind of ['forensics','android','reversing','web3','fuzzing']){
+  const m=makeModel(kind);
+  for(const p of [0,.3,.6,1]){
+   m.update(sampleMotion(kind,p),false);m.root.updateMatrixWorld(true);const bounds=new Box3().setFromObject(m.root);
+   for(const point of [bounds.min,bounds.max])for(const value of point.toArray())assert.ok(Number.isFinite(value)&&Math.abs(value)<12,kind);
+  }
  }
 });

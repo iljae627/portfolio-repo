@@ -202,3 +202,5 @@ CCE, DEF CON, InfoSec Hub와 Collector는 `completedProjects`로 분리하되 �
 Collector의 개인 역할은 Sigstore·Rekor 수집기 개발이며 이후는 팀 공동 작업입니다. 아카이브 등록일 2026-10-19와 활동 시기인 여름방학을 구분했습니다. [내용 출처와 분류 기준](docs/project-editorial.md)을 참고하세요.
 
 2026-10-19 추가 수정: Android 반투명 필름 Mesh와 모션 경로를 완전 삭제했습니다. 승인된 Web3·퍼징 장면을 추가해 홈은 총 5개 관심 분야로 구성됩니다. 새 장면도 스크롤 역재생·정지와 부품별 학습 카드, 터치 버튼을 지원합니다.
+
+광학 스튜디오 재제작: 다섯 모델의 체결·회로·단자를 보강하고 Web3·퍼징은 속이 빈 유리 하우징으로 재구성했습니다. HDRI, 물리 투과 유리, AgX 톤 매핑, VSM 그림자와 바닥 반사를 사용합니다. 로컬 CC0 재질의 출처와 해시는 `docs/studio-assets.json`에 기록했습니다.
