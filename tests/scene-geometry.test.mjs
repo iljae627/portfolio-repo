@@ -114,3 +114,11 @@ test('phone main body has a contemporary thin profile with an assembled display'
  const battery=new Box3().setFromObject(m.parts.battery),mainboard=new Box3().setFromObject(m.parts.mainboard),charger=new Box3().setFromObject(m.parts.chargingBoard);
  assert.ok(battery.max.y<mainboard.min.y);assert.ok(battery.min.y>charger.max.y);
 });
+
+test('HDD actuator has a real opening in its tapered arm',()=>{
+ const m=buildForensics();m.update(sampleMotion('forensics',0));m.root.updateMatrixWorld(true);
+ const arm=m.parts.headArm,axis=new Vector3(0,0,1).transformDirection(arm.matrixWorld);
+ const origin=arm.localToWorld(new Vector3(-.58,.3666667,1));const ray=new Raycaster(origin,axis.clone().negate());
+ assert.equal(ray.intersectObject(arm).length,0);
+ ray.set(arm.localToWorld(new Vector3(-.15,.03,1)),axis.clone().negate());assert.ok(ray.intersectObject(arm).length>0);
+});
