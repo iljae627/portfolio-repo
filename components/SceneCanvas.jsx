@@ -6,9 +6,10 @@ import {sceneStudies} from '../lib/scene-studies';
 export default function SceneCanvas({kind,control}) {
   const root=useRef(null);
   const [ready,setReady]=useState(false);
+  const [failed,setFailed]=useState(false);
   const [studyId,setStudyId]=useState('');
   const study=sceneStudies[studyId];
-  function dismissStudy(){control.studyManual=false;control.studyPinned=false;control.pointerActive=false;control.studyDismissed=true;setStudyId('');}
+  function dismissStudy(){control.studyFocused=false;control.studyManual=false;control.studyPinned=false;control.pointerActive=false;control.studyDismissed=true;setStudyId('');}
   useEffect(()=>{
     const host=root.current;
     let disposed=false,cleanup,started=false;
@@ -20,27 +21,27 @@ export default function SceneCanvas({kind,control}) {
         if(disposed)return;
         cleanup=mountScene(host,kind,control,()=>{if(!disposed)setReady(true);},id=>{if(!disposed)setStudyId(id);});
       }catch{
-        // Keep the existing illustrated scene if WebGL is unavailable.
-        host.dataset.renderer='fallback';
+        if(!disposed)setFailed(true);
       }
     },{rootMargin:'300px'});
     observer.observe(host);
     return()=>{disposed=true;observer.disconnect();cleanup?.();};
   },[kind,control]);
-  return <div ref={root} className={`scene-webgl ${ready?'is-ready':''}`} data-renderer={ready?'webgl':'loading'} data-study-open={!!study}
+  return <div ref={root} className={`scene-webgl ${ready?'is-ready':''}`} data-renderer={failed?'unavailable':ready?'webgl':'loading'} data-study-open={!!study}
     onKeyDown={event=>{if(event.key==='Escape')dismissStudy();}}
     onPointerMove={event=>{
       if(event.pointerType!=='mouse')return;
-      if(event.target.closest('.study-ui'))return;
+
       const rect=event.currentTarget.getBoundingClientRect();
       control.pointerX=(event.clientX-rect.left)/rect.width*2-1;
       control.pointerY=(event.clientY-rect.top)/rect.height*2-1;
       control.pointerActive=true;control.studyDismissed=false;
-    }} onPointerLeave={()=>{control.pointerX=0;control.pointerY=0;control.pointerActive=false;control.studyPinned=false;}}>
+    }} onPointerLeave={()=>{control.pointerX=0;control.pointerY=0;control.pointerActive=false;control.studyPinned=!!control.studyFocused;}}>
+      {failed && <p className="scene-unavailable">이 기기에서 3D 화면을 표시할 수 없습니다.</p>}
       <svg className="study-overlay" aria-hidden="true"><rect data-study-box rx="8" /><path data-study-line /></svg>
       <section className="study-card study-ui" hidden={!study} aria-label="관련 학습 기록"
-        onPointerEnter={()=>{control.studyPinned=true;}} onPointerLeave={()=>{control.studyPinned=false;}}
-        onFocus={()=>{control.studyPinned=true;}} onBlur={()=>{control.studyPinned=false;}}>
+        onPointerEnter={()=>{control.studyPinned=true;}} onPointerLeave={()=>{control.studyPinned=!!control.studyFocused;}}
+        onFocus={()=>{control.studyFocused=true;control.studyPinned=true;}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget)){control.studyFocused=false;control.studyPinned=false;}}}>
         <button type="button" className="study-close" aria-label="학습 기록 닫기" onClick={dismissStudy}>×</button>
         {study && <a href={study.href}><Image src={study.image} width={48} height={48} alt="" sizes="48px" /><span><strong>{study.title}</strong><small>{study.text}</small></span><span aria-hidden="true">↗</span></a>}
       </section>

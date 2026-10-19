@@ -4,11 +4,11 @@ import Link from "next/link";
 const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata = {
   metadataBase: new URL(site),
-  title: { default: "정일재 — Security, traced.", template: "%s | 정일재" },
+  title: { default: "정일재 — 정보보호 포트폴리오", template: "%s | 정일재" },
   description:
-    "흔적을 읽고, 원리를 파고들고, 직접 만듭니다. 정일재의 디지털 포렌식·보안 연구·개발 포트폴리오.",
+    "정일재의 포트폴리오. 디지털 포렌식, Android 보안, CTF 학습과 개인 개발 프로젝트를 정리했습니다.",
   openGraph: {
-    title: "정일재 — Security, traced.",
+    title: "정일재 — 정보보호 포트폴리오",
     description: "Digital Forensics · Security Research · Development",
     locale: "ko_KR",
     type: "website",

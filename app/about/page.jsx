@@ -7,22 +7,21 @@ export default function About() { return <main id="main" className="about-page">
           <div>
             <span className="eyebrow">저를 소개합니다</span>
             <h2>
-              답을 찾는 것에서,
+              정보보호를 공부하는
               <br />
-              이유를 이해하는 쪽으로.
+              정일재입니다.
             </h2>
             <p>
-              중부대학교 정보보호학과에서 공부하고 있습니다. 시스템에 남은
-              흔적을 읽는 일에 관심이 많고, 사이버 수사와 디지털 포렌식 분야를
-              목표로 경험을 쌓고 있습니다.
+              중부대학교 정보보호학과에서 공부하고 있습니다. 디지털 포렌식과 Android 보안에 관심이 있어
+              관련 실습과 CTF에 참여하고 있습니다.
             </p>
             <p>
-              개발로 시작한 호기심은 패킷과 바이너리, 앱과 가상머신으로
-              이어졌습니다. 잘된 결과뿐 아니라 막힌 지점과 실패한 가설도 함께
-              기록합니다.
+              패킷·바이너리·앱을 분석한 과정과 개인 개발 프로젝트를
+              블로그에 정리합니다. 실습 중 겪은 오류와 해결 방법도 함께
+              기록하고 있습니다.
             </p>
             <a href="mailto:iljae627@gmail.com" className="text-link">
-              함께 이야기 나누기 <ArrowUpRight size={16} />
+              이메일 보내기 <ArrowUpRight size={16} />
             </a>
           </div>
           <div className="approach-list">
@@ -30,22 +29,22 @@ export default function About() { return <main id="main" className="about-page">
               [
                 ScanLine,
                 "01",
-                "흔적을 읽습니다.",
-                "메모리·로그·패킷의 단서를 모아 사건의 흐름을 복원합니다.",
+                "디지털 포렌식 공부",
+                "파일과 디스크, Windows·클라우드 로그를 분석하는 방법을 공부합니다.",
                 "Wireshark / Autopsy / MinIO",
               ],
               [
                 Binary,
                 "02",
-                "경계를 실험합니다.",
-                "바이너리와 모바일 앱을 분석하고, 가설을 실습 환경에서 확인합니다.",
+                "리버싱·모바일 보안 실습",
+                "GDB로 바이너리를 분석하고, Frida·JADX로 Android 앱을 실습합니다.",
                 "GDB / Frida / JADX / AFL++",
               ],
               [
                 Braces,
                 "03",
-                "필요한 것을 만듭니다.",
-                "자동화 스크립트와 서버, 이해를 돕는 웹 인터페이스를 개발합니다.",
+                "개인 도구와 서버 개발",
+                "반복 작업용 스크립트, 포켓몬 배포 서버와 웹 도구를 개발합니다.",
                 "Python / C·C++ / JavaScript",
               ],
             ].map(([Icon, n, title, desc, tools]) => (
@@ -88,14 +87,13 @@ export default function About() { return <main id="main" className="about-page">
       </section>
       <section id="contact" className="contact-section">
         <div className="shell">
-          <span className="eyebrow">다음 경험을 함께</span>
-          <h2>함께 풀어볼 문제가 있나요?</h2>
+          <span className="eyebrow">연락처</span>
+          <h2>프로젝트·활동 문의</h2>
           <a className="contact-email" href="mailto:iljae627@gmail.com">
             iljae627@gmail.com <ArrowUpRight />
           </a>
           <p>
-            보안 연구, 개발 프로젝트, 그리고 새로운 배움에 관한 이야기를
-            기다립니다.
+            보안 학습이나 개발 프로젝트 관련 연락은 이메일로 보내 주세요.
           </p>
         </div>
       </section>

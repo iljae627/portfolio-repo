@@ -3,7 +3,7 @@ import {HDRLoader} from 'three/addons/loaders/HDRLoader.js';
 import {Reflector} from 'three/addons/objects/Reflector.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {makeModel} from './interest-models';
-import {selectStudy} from '../lib/study-selection.mjs';
+import {selectStudy,nearStudy} from '../lib/study-selection.mjs';
 import {sampleMotion} from '../lib/scene-motion.mjs';
 import {marbleSurface,foliageShadow} from './studio-surfaces.js';
 
@@ -111,7 +111,7 @@ export function mountScene(host, kind, control, ready, onStudy = ()=>{}) {
     py+=(reduced?0:control.pointerY-py)*.1;
     if(reduced){px=0;py=0;}
     const pose=sampleMotion(kind,progress);
-    const stateKey=`${pose.frame}:${px.toFixed(3)}:${py.toFixed(3)}:${control.pointerActive}:${control.studyManual}:${control.studyPinned}:${control.studyDismissed}:${width}:${height}`;
+    const stateKey=`${pose.frame}:${px.toFixed(3)}:${py.toFixed(3)}:${control.pointerX}:${control.pointerY}:${control.pointerActive}:${control.studyManual}:${control.studyPinned}:${control.studyDismissed}:${width}:${height}`;
     if(stateKey===lastKey&&!first)return;
     lastKey=stateKey;
     model.update(pose,compact);
@@ -128,18 +128,41 @@ export function mountScene(host, kind, control, ready, onStudy = ()=>{}) {
       let part=hovered;while(part&&!part.userData.study)part=part.parent;
       hoveredStudy=part?.userData.study||'';
     }
-    const nextStudy=selectStudy({selected,hovered:hoveredStudy,manual:control.studyManual,pinned:control.studyPinned,dismissed:control.studyDismissed},Object.keys(model.hotspots)[0]);
-    if(nextStudy&&model.hotspots[nextStudy]){
-      studyBox.setFromObject(model.hotspots[nextStudy]);
+    function projectStudy(id){
+      const object=model.hotspots[id];
+      if(!object)return null;
+      for(let node=object;node;node=node.parent)if(!node.visible)return null;
+      studyBox.setFromObject(object);
+      if(studyBox.isEmpty())return null;
       let minX=width,minY=height,maxX=0,maxY=0;
       for(const x of [studyBox.min.x,studyBox.max.x])for(const y of [studyBox.min.y,studyBox.max.y])for(const z of [studyBox.min.z,studyBox.max.z]){
         corner.set(x,y,z).project(camera);const sx=(corner.x+1)*width/2,sy=(1-corner.y)*height/2;
         minX=Math.min(minX,sx);minY=Math.min(minY,sy);maxX=Math.max(maxX,sx);maxY=Math.max(maxY,sy);
       }
       minX=Math.max(12,minX-8);minY=Math.max(12,minY-8);maxX=Math.min(width-12,maxX+8);maxY=Math.min(height-12,maxY+8);
-      outline?.setAttribute('x',minX);outline?.setAttribute('y',minY);outline?.setAttribute('width',Math.max(8,maxX-minX));outline?.setAttribute('height',Math.max(8,maxY-minY));
-      const endX=compact?width/2:width-150,endY=compact?height-142:height*.26+40;
-      connector?.setAttribute('d',`M ${(minX+maxX)/2} ${minY} L ${(minX+maxX)/2} ${endY} L ${endX} ${endY}`);
+      const x=(minX+maxX)/2,endX=compact?width/2:width-150,endY=compact?height-142:height*.26+40;
+      return {box:{x:minX,y:minY,width:Math.max(8,maxX-minX),height:Math.max(8,maxY-minY)},line:[{x,y:minY},{x,y:endY},{x:endX,y:endY}]};
+    }
+    const point=control.pointerActive?{x:(control.pointerX+1)*width/2,y:(control.pointerY+1)*height/2}:null;
+    const currentRegion=projectStudy(selected);
+    const card=host.querySelector('.study-card');
+    if(currentRegion&&card&&!card.hidden){
+      const rect=card.getBoundingClientRect(),hostRect=host.getBoundingClientRect();
+      currentRegion.card={x:rect.left-hostRect.left,y:rect.top-hostRect.top,width:rect.width,height:rect.height};
+    }
+    const near=!!currentRegion&&nearStudy(point,currentRegion);
+    // Nearby empty space can open a part; the connector keeps the selected card reachable.
+    if(point&&!near&&!hoveredStudy&&!control.studyPinned&&!control.studyManual){
+      hoveredStudy=Object.keys(model.hotspots).find(id=>{
+        const region=projectStudy(id);
+        return region&&nearStudy(point,{box:region.box},16);
+      })||'';
+    }
+    const nextStudy=selectStudy({selected,hovered:hoveredStudy,near,manual:control.studyManual,pinned:control.studyPinned,dismissed:control.studyDismissed},Object.keys(model.hotspots)[0]);
+    const region=nextStudy&&(nextStudy===selected?currentRegion:projectStudy(nextStudy));
+    if(region){
+      for(const [key,value] of Object.entries(region.box))outline?.setAttribute(key,value);
+      connector?.setAttribute('d',region.line.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' '));
     }
     if(nextStudy!==selected){selected=nextStudy;onStudy(selected);}
     const renderStart=performance.now();
