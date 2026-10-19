@@ -30,15 +30,21 @@ export function mountCyberScene(host,kind,control,onStudy){
   if(key===last)return;last=key;
   host.style.setProperty('--attack',pose.attack.toFixed(4));host.style.setProperty('--modified',pose.modified.toFixed(4));host.style.setProperty('--trace',pose.trace);
   host.style.setProperty('--pointer-x',motion.matches?0:(control.pointerX||0)*1.5);host.style.setProperty('--pointer-y',motion.matches?0:(control.pointerY||0)*1.2);
-  host.dataset.frame=String(pose.frame);host.dataset.progress=pose.progress.toFixed(4);host.dataset.renderer=kind==='web'?'web-scroll-simulation':'scroll-code-rain';
+  host.dataset.frame=String(pose.frame);host.dataset.progress=pose.progress.toFixed(4);host.dataset.renderer=kind==='web'?'web-scroll-simulation':kind==='fuzzing'?'scroll-fuzzing-flow':'scroll-code-rain';
   if(kind==='reversing')drawRain(pose);
-  else{for(let i=0;i<slices.length;i++)slices[i].style.setProperty('--slice-shift',`${pose.slices[i].toFixed(2)}px`);const status=host.querySelector('[data-web-status]');if(status)status.textContent=pose.status;}
+  else if(kind==='web'){for(let i=0;i<slices.length;i++)slices[i].style.setProperty('--slice-shift',`${pose.slices[i].toFixed(2)}px`);const status=host.querySelector('[data-web-status]');if(status)status.textContent=pose.status;}
+  else{
+   host.style.setProperty('--fuzz-input',pose.input.toFixed(4));host.style.setProperty('--fuzz-coverage',pose.coverage.toFixed(4));host.style.setProperty('--fuzz-crash',pose.crash.toFixed(4));
+   for(const el of host.querySelectorAll('[data-fuzz-bytes]'))el.textContent=pose.bytes[Number(el.dataset.fuzzBytes)];
+   const stage=host.querySelector('[data-fuzz-stage]');if(stage)stage.textContent=pose.crash>.5?'CRASH → REPRODUCE → ANALYZE':pose.coverage>.2?'MUTATION → RUN → NEW PATH':'INPUT → MUTATION → EXECUTION';
+  }
   const liveTargets=targets.filter(el=>pose.progress>=Number(el.dataset.minProgress||0));
   const point=control.pointerActive?{x:(control.pointerX+1)*width/2,y:(control.pointerY+1)*height/2}:null;
   const current=liveTargets.find(el=>el.dataset.cyberStudy===selected),region=current&&regionFor(current),card=host.querySelector('.study-card');
   if(region&&card&&!card.hidden)region.card=rectFor(card);
   const near=!!region&&nearStudy(point,region),hovered=point&&!control.studyPinned&&!control.studyManual?[...liveTargets].reverse().find(el=>nearStudy(point,{box:rectFor(el)},12))?.dataset.cyberStudy||'':'';
-  const next=selectStudy({selected,hovered,near,manual:control.studyManual,pinned:control.studyPinned,dismissed:control.studyDismissed},liveTargets[0]?.dataset.cyberStudy);
+  const onConnector=!!region&&nearStudy(point,{line:region.line,card:region.card});
+  const next=selectStudy({selected,hovered,near,onConnector,manual:control.studyManual,pinned:control.studyPinned,dismissed:control.studyDismissed},liveTargets[0]?.dataset.cyberStudy);
   const nextTarget=liveTargets.find(el=>el.dataset.cyberStudy===next);
   if(nextTarget){const r=regionFor(nextTarget);for(const [k,v] of Object.entries(r.box))host.querySelector('[data-study-box]')?.setAttribute(k,v);host.querySelector('[data-study-line]')?.setAttribute('d',r.line.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' '));}
   if(next!==selected){selected=next;host.dataset.study=selected;onStudy(selected);}

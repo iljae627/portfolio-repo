@@ -25,7 +25,7 @@ export default function InterestScenes() {
     function update() {
       frame = 0;
       const height = window.innerHeight;
-      const header = document.querySelector("header")?.offsetHeight || 76;
+      const header = 0;
       let next = null;
       for (const section of sections) {
         const rect = section.getBoundingClientRect();
@@ -58,7 +58,7 @@ export default function InterestScenes() {
       </nav>
       {scenes.map(scene => <section className={`interest-scene scene-${scene.id}`} id={scene.id} key={scene.id} aria-labelledby={`${scene.id}-title`}>
         <div className="interest-stage">
-          <div className="interest-art">{["reversing","web"].includes(scene.id) ? <CyberScene kind={scene.id} control={controls.current[scene.id]}/> : <SequenceScene kind={scene.id} control={controls.current[scene.id]}/>}</div>
+          <div className="interest-art">{["reversing","web","fuzzing"].includes(scene.id) ? <CyberScene kind={scene.id} control={controls.current[scene.id]}/> : <SequenceScene kind={scene.id} control={controls.current[scene.id]}/>}</div>
           <div className="interest-copy"><span>{scene.label}</span>{scene.id === 'forensics' ? <h1 id={`${scene.id}-title`}>{scene.title}</h1> : <h2 id={`${scene.id}-title`}>{scene.title}</h2>}</div>
           <Link className="interest-visit" href={scene.href}>기록 보기 <ArrowUpRight size={15} /></Link>
         </div>
