@@ -32,7 +32,6 @@ test('mobile poses and fit map interactive hit regions into the same raster coor
  assert.ok(frameURL('forensics',5,true).endsWith('/small/005.webp'));
 });
 test('all three raster scenes have 240 decodable desktop and mobile frames, without missing ends',async()=>{
- const root=`public/sequences/${SEQUENCE_VERSION,HDD_SCREW_HOLES}`;
  for(const kind of sceneKinds){
   for(const small of [false,true]){
    const dir='public'+frameURL(kind,0,small).slice(0,-'000.webp'.length);
@@ -56,4 +55,15 @@ test('six screw heads start on the actual cover holes and clear before the lid m
 });
 test('Android frames have no separate floating shield',()=>{
  for(let i=0;i<240;i++)assert.ok(sequencePose('android',i).parts.every(p=>p.key!=='shield'));
+});
+test('closed rear cover exactly matches the upright chassis pose and covers the internals',()=>{
+ const first=sequencePose('android',0),body=first.parts.find(p=>p.key==='phone'),cover=first.parts.find(p=>p.key==='back-cover');
+ for(const key of ['x','y','w','h','angle'])assert.equal(body[key],cover[key]);
+ assert.equal(body.alpha,0);assert.equal(cover.alpha,1);
+ for(let f=0;f<240;f++){
+  const parts=sequencePose('android',f).parts;
+  assert.ok(parts.every(p=>p.key!=='screen'));
+  assert.equal(parts.find(p=>p.key==='back-cover').angle,0);
+ }
+ assert.equal(sequencePose('android',239).parts.find(p=>p.key==='phone').alpha,1);
 });
