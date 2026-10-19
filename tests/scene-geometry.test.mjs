@@ -93,3 +93,24 @@ test('fuzzing candidate is a visible corpus cube and moves continuously without 
   if(pose.open===0)assert.equal(m.parts.crash.scale.x,1);
  }
 });
+
+test('HDD lower threaded bosses align with the lid screws and have smaller deep bores',()=>{
+ const m=buildForensics();m.update(sampleMotion('forensics',0));m.root.updateMatrixWorld(true);
+ assert.equal(m.parts.baseBores.length,4);
+ for(let i=0;i<4;i++){
+  const boss=m.parts.baseBores[i];assert.equal(boss.position.x,m.parts.screws[i].position.x);assert.equal(boss.position.y,m.parts.screws[i].position.y);
+  const axis=new Vector3(0,0,1).transformDirection(boss.matrixWorld),origin=boss.getWorldPosition(new Vector3()).addScaledVector(axis,.5),ray=new Raycaster(origin,axis.clone().negate());
+  assert.equal(ray.intersectObject(boss,true).length,0,'threaded bore is open along its axis');
+  const stem=m.parts.screws[i].children.find(o=>o.geometry?.parameters?.radiusTop===.028);
+  const tip=boss.worldToLocal(new Vector3(0,-stem.geometry.parameters.height/2,0).applyMatrix4(stem.matrixWorld));
+  assert.ok(tip.z<.135&&tip.z>-.135,'tightened screw enters the boss without reaching its bottom');
+  const offset=new Vector3(1,0,0).transformDirection(boss.matrixWorld).multiplyScalar(.06);ray.set(origin.add(offset),axis.clone().negate());assert.ok(ray.intersectObject(boss,true).length>0,'boss metal surrounds the opening');
+ }
+});
+test('phone main body has a contemporary thin profile with an assembled display',()=>{
+ const m=buildAndroid();m.update(sampleMotion('android',0),false);m.root.rotation.set(0,0,0);m.parts.phone.rotation.set(0,0,0);m.root.updateMatrixWorld(true);
+ const bounds=new Box3().setFromObject(m.parts.frame);bounds.union(new Box3().setFromObject(m.parts.back));bounds.union(new Box3().setFromObject(m.parts.screen));
+ const size=bounds.getSize(new Vector3());assert.ok(size.z/size.x<.105,`depth/width ${size.z/size.x}`);
+ const battery=new Box3().setFromObject(m.parts.battery),mainboard=new Box3().setFromObject(m.parts.mainboard),charger=new Box3().setFromObject(m.parts.chargingBoard);
+ assert.ok(battery.max.y<mainboard.min.y);assert.ok(battery.min.y>charger.max.y);
+});
