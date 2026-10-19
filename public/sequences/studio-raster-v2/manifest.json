@@ -1,0 +1,29 @@
+{
+  "version": "studio-raster-v2",
+  "count": 240,
+  "width": 1280,
+  "height": 832,
+  "scenes": {
+    "fuzzing": {
+      "bytes": 44966944,
+      "sourceSha256": "ec7306aa6a74a3fecfd0a1af73801ce2333e0566d84899c0137c234f4455370b"
+    },
+    "forensics": {
+      "bytes": 27024366,
+      "sourceSha256": "3b8fff9e376c36c6c2e28b48a9b017c4f1113afb17d0daaa4b3c75a06c7f569a"
+    },
+    "android": {
+      "bytes": 32945176,
+      "sourceSha256": "6a9e592ad973881d44dddbf920ab02915545e705ab127f9275b772f052d852ca"
+    },
+    "reversing": {
+      "bytes": 43531366,
+      "sourceSha256": "b7212e17a7ab347957a3cbb6d15ea526dc5b4b28c9650234650e700fc828d842"
+    },
+    "web3": {
+      "bytes": 49457220,
+      "sourceSha256": "1440d3f240f35e02e3b40ea3c34a5d86c385d4c2be8d663878c09338f2b61ae1"
+    }
+  },
+  "method": "AI-generated photographic cutout assets composited into deterministic raster frames; no runtime 3D"
+}

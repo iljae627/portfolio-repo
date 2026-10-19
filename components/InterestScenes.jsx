@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import SceneCanvas from "./SceneCanvas";
+import SequenceScene from "./SequenceScene";
 
 const scenes = [
   {id: "forensics", label: "DIGITAL FORENSICS", title: "디지털 포렌식", href: "/work/digital-forensics"},
@@ -57,7 +57,7 @@ export default function InterestScenes() {
       </nav>
       {scenes.map(scene => <section className={`interest-scene scene-${scene.id}`} id={scene.id} key={scene.id} aria-labelledby={`${scene.id}-title`}>
         <div className="interest-stage">
-          <div className="interest-art"><SceneCanvas kind={scene.id} control={controls.current[scene.id]} /></div>
+          <div className="interest-art"><SequenceScene kind={scene.id} control={controls.current[scene.id]} /></div>
           <div className="interest-copy"><span>{scene.label}</span>{scene.id === 'forensics' ? <h1 id={`${scene.id}-title`}>{scene.title}</h1> : <h2 id={`${scene.id}-title`}>{scene.title}</h2>}</div>
           <Link className="interest-visit" href={scene.href}>기록 보기 <ArrowUpRight size={15} /></Link>
         </div>
