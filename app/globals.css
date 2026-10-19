@@ -599,3 +599,6 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
  .interest-copy h1 { font-size: clamp(32px, 8vw, 42px); }
  .collection-description { font-size: 13px; }
 }
+
+.study-close { position:absolute; right:-8px; top:-8px; width:26px; height:26px; border:1px solid #dce3df; border-radius:50%; background:#fff; color:#52655a; box-shadow:0 2px 8px #28352f16; font-size:18px; line-height:1; cursor:pointer; }
+.study-close:focus-visible { outline:2px solid #4c7b67; outline-offset:3px; }

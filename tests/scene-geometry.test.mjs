@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Box3} from 'three';
+import {Box3,Raycaster,Vector3} from 'three';
 import {buildAndroid,buildForensics,buildWeb3,buildFuzzing,makeModel} from '../components/interest-models.js';
 import {sampleMotion,SCENE_FRAMES} from '../lib/scene-motion.mjs';
 
@@ -64,5 +64,32 @@ test('every detailed model has finite bounded geometry when assembled and explod
    m.update(sampleMotion(kind,p),false);m.root.updateMatrixWorld(true);const bounds=new Box3().setFromObject(m.root);
    for(const point of [bounds.min,bounds.max])for(const value of point.toArray())assert.ok(Number.isFinite(value)&&Math.abs(value)<12,kind);
   }
+ }
+});
+
+test('four screw positions are genuine through bores with intact surrounding metal',()=>{
+ const m=buildForensics();m.update(sampleMotion('forensics',0));m.root.updateMatrixWorld(true);
+ const axis=new Vector3(0,0,1).transformDirection(m.parts.lidPlate.matrixWorld),ray=new Raycaster();
+ for(const screw of m.parts.screws){
+  const center=screw.getWorldPosition(new Vector3()),origin=center.clone().addScaledVector(axis,1);
+  ray.set(origin,axis.clone().negate());assert.equal(ray.intersectObject(m.parts.lid,true).length,0,'screw bore must pass through the lid');
+  const offset=new Vector3(.095,0,0).transformDirection(m.parts.lidPlate.matrixWorld).multiplyScalar(.095);
+  ray.set(origin.clone().add(offset),axis.clone().negate());assert.ok(ray.intersectObject(m.parts.lidPlate).length>0,'metal must remain outside the screw head');
+ }
+});
+test('closed phone screen contacts the surrounding chassis while clearing the chip',()=>{
+ const m=buildAndroid();m.update(sampleMotion('android',0),false);m.root.rotation.set(0,0,0);m.parts.frame.parent.rotation.set(0,0,0);m.root.updateMatrixWorld(true);
+ const screen=new Box3().setFromObject(m.parts.screen),frame=new Box3().setFromObject(m.parts.frame),chip=new Box3().setFromObject(m.parts.core);
+ assert.ok(screen.min.z<=frame.max.z+.002,'no initial air gap at the screen rim');
+ assert.ok(screen.min.z>chip.max.z,'chip remains behind the display');
+});
+test('fuzzing candidate is a visible corpus cube and moves continuously without refraction artifacts',()=>{
+ const m=buildFuzzing();let previous;
+ assert.equal(m.parts.tokens.length+1,18);assert.equal(m.parts.crash.material.transmission,0);
+ for(let i=0;i<=SCENE_FRAMES;i++){
+  const pose=sampleMotion('fuzzing',i/SCENE_FRAMES);m.update(pose);
+  if(previous)assert.ok(m.parts.crash.position.distanceTo(previous)<.02,`jump at frame ${i}`);
+  previous=m.parts.crash.position.clone();assert.equal(m.parts.crash.visible,true);
+  if(pose.open===0)assert.equal(m.parts.crash.scale.x,1);
  }
 });

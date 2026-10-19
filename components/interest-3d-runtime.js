@@ -3,6 +3,7 @@ import {HDRLoader} from 'three/addons/loaders/HDRLoader.js';
 import {Reflector} from 'three/addons/objects/Reflector.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {makeModel} from './interest-models';
+import {selectStudy} from '../lib/study-selection.mjs';
 import {sampleMotion} from '../lib/scene-motion.mjs';
 import {marbleSurface,foliageShadow} from './studio-surfaces.js';
 
@@ -110,7 +111,7 @@ export function mountScene(host, kind, control, ready, onStudy = ()=>{}) {
     py+=(reduced?0:control.pointerY-py)*.1;
     if(reduced){px=0;py=0;}
     const pose=sampleMotion(kind,progress);
-    const stateKey=`${pose.frame}:${px.toFixed(3)}:${py.toFixed(3)}:${control.pointerActive}:${control.studyManual}:${control.studyPinned}:${width}:${height}`;
+    const stateKey=`${pose.frame}:${px.toFixed(3)}:${py.toFixed(3)}:${control.pointerActive}:${control.studyManual}:${control.studyPinned}:${control.studyDismissed}:${width}:${height}`;
     if(stateKey===lastKey&&!first)return;
     lastKey=stateKey;
     model.update(pose,compact);
@@ -120,13 +121,14 @@ export function mountScene(host, kind, control, ready, onStudy = ()=>{}) {
     pivot.rotation.y=px*.07;pivot.rotation.x=py*.03;
     pivot.position.x=px*.04;
     scene.updateMatrixWorld(true);
-    let hovered=null,nextStudy=control.studyManual?Object.keys(model.hotspots)[0]:control.studyPinned?selected:'';
+    let hovered=null,hoveredStudy='';
     if(control.pointerActive&&!control.studyPinned&&!control.studyManual){
       mouse.set(control.pointerX,-control.pointerY);raycaster.setFromCamera(mouse,camera);
       hovered=raycaster.intersectObject(model.root,true).find(hit=>hit.object.isMesh)?.object;
       let part=hovered;while(part&&!part.userData.study)part=part.parent;
-      nextStudy=part?.userData.study||'';
+      hoveredStudy=part?.userData.study||'';
     }
+    const nextStudy=selectStudy({selected,hovered:hoveredStudy,manual:control.studyManual,pinned:control.studyPinned,dismissed:control.studyDismissed},Object.keys(model.hotspots)[0]);
     if(nextStudy&&model.hotspots[nextStudy]){
       studyBox.setFromObject(model.hotspots[nextStudy]);
       let minX=width,minY=height,maxX=0,maxY=0;

@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {brushedMetal,phoneDisplay} from './studio-surfaces.js';
-import {forensicLayout,androidLayout} from '../lib/scene-motion.mjs';
+import {forensicLayout,androidLayout,fuzzingCandidateLayout} from '../lib/scene-motion.mjs';
 
 const metal = brushedMetal;
 const ceramic = color => new T.MeshPhysicalMaterial({color, roughness: .22, metalness: .13, clearcoat: .65, clearcoatRoughness:.15});
@@ -120,7 +120,15 @@ export function buildForensics() {
   const chips=[chip(circuit,.88,.68,.13,-.85,.35),chip(circuit,.88,.68,.13,.4,.35),chip(circuit,.65,.46,.13,-.7,-.55)];
   chips[0].userData.study='forensics-logs';
   const lid=new T.Group(); device.add(lid); lid.position.set(0,1.25,.44);
-  panel(lid,3.85,2.6,.10,silver,[0,-1.25,0],.22);
+  const screwCenters=[[-1.65,-1.04],[1.65,-1.04],[-1.65,1.04],[1.65,1.04]];
+  const lidShape=roundedShape(3.85,2.6,.22);
+  for(const [x,y] of screwCenters){const hole=new T.Path();hole.absarc(x,y,.064,0,Math.PI*2,true);lidShape.holes.push(hole);}
+  const lidGeometry=new T.ExtrudeGeometry(lidShape,{depth:.10,bevelEnabled:true,bevelSegments:5,steps:1,bevelSize:.006,bevelThickness:.006,curveSegments:32});lidGeometry.translate(0,0,-.05);
+  const lidPlate=mesh(lid,lidGeometry,silver,[0,-1.25,0]);
+  // Countersinks taper to a bore larger than the .028 screw stem.
+  for(const [x,y] of screwCenters){
+    const seat=mesh(lid,new T.LatheGeometry([new T.Vector2(.064,.056),new T.Vector2(.034,.018),new T.Vector2(.034,-.056)],48),new T.MeshPhysicalMaterial({color:0x46515d,metalness:.6,roughness:.45,side:T.DoubleSide}),[x,y-1.25,0]);seat.rotation.x=Math.PI/2;
+  }
   // A small etched line is a physical detail; no simulated code or evidence text.
   panel(lid,.9,.06,.012,edge,[0,-1.28,.065],.025);
   for(let i=0;i<14;i++)panel(lid,.55,.012,.004,edge,[.75,-.95-i*.033,.057],.005);
@@ -141,7 +149,7 @@ export function buildForensics() {
   const scan=mesh(circuit,new T.PlaneGeometry(2.9,.065),new T.MeshBasicMaterial({color:0x72d9ff,transparent:true,opacity:0,side:T.DoubleSide,depthWrite:false}),[0,-.85,.27]);
   const nodes=[];
   for(let i=0;i<9;i++) nodes.push(mesh(circuit,new T.SphereGeometry(.035,12,12),new T.MeshBasicMaterial({color:0x44bbef}),[-1.15+i*.28,.82,.23]));
-  return {root,hotspots:{'forensics-files':circuit,'forensics-logs':chips[0],'forensics-cloud':lens},parts:{lid,screws,lens,circuit,chips},update(p,compact){
+  return {root,hotspots:{'forensics-files':circuit,'forensics-logs':chips[0],'forensics-cloud':lens},parts:{lid,lidPlate,screws,lens,circuit,chips},update(p,compact){
     const layout=forensicLayout(p);
     root.rotation.y=-.24+p.turn;
     lid.rotation.x=-p.open*1.65;
@@ -185,6 +193,9 @@ export function buildAndroid() {
   bevel(phone,.05,.46,.08,silver,[-.92,.65,0],.02);
   for(let i=0;i<7;i++)bevel(phone,.045,.02,.05,graphite,[-.48+i*.16,-1.737,0],.008);
   bevel(phone,.24,.025,.09,graphite,[0,-1.737,0],.012);
+  const frameShape=roundedShape(1.8,3.45,.23);frameShape.holes.push(roundedShape(1.58,3.15,.16,T.Path));
+  const frameGeometry=new T.ExtrudeGeometry(frameShape,{depth:.25,bevelEnabled:true,bevelSize:.008,bevelThickness:.008,bevelSegments:5,curveSegments:32});
+  const frame=mesh(phone,frameGeometry,silver,[0,0,.08]);
   const circuit=board(phone,1.58,3.15,.12,0x254f45);
   const core=chip(circuit,.76,.66,.13,0,.5);
   circuit.userData.study='android-runtime';
@@ -198,7 +209,7 @@ export function buildAndroid() {
   mesh(screen,new T.CircleGeometry(.018,32),jewel(0x174363),[0,1.39,.06]);
   for(let i=0;i<9;i++)box(screen,.018,.008,.006,metal(0x74828a),[-.12+i*.03,1.51,.058]);
   const robot=androidRobot(root);robot.root.position.set(1.25,0,.35);robot.root.rotation.y=-.15;
-  return {root,hotspots:{'android-track':robot.root,'android-static':screen,'android-runtime':core},parts:{screen,core,circuit,display},update(p,compact){
+  return {root,hotspots:{'android-track':robot.root,'android-static':screen,'android-runtime':core},parts:{screen,frame,core,circuit,display},update(p,compact){
     const layout=androidLayout(p);
     root.rotation.y=.05+p.turn;
     screen.position.set(layout.screen.x,0,layout.screen.z);
@@ -319,19 +330,24 @@ export function buildFuzzing(){
   bevel(input,.73,1.04,.045,new T.MeshPhysicalMaterial({color:0xfaf5e8,roughness:.42}),[0,0,0],.018);
   for(let i=0;i<5;i++)bevel(input,.45-i%2*.09,.022,.006,metal(0xa1a6aa),[0,.28-i*.12,.028],.003);
   const tokens=[];
-  for(let i=0;i<18;i++)tokens.push(bevel(chamber,.25,.25,.25,i%4===0?chrome:blue,[0,0,0],.024));
-  const amber=glass(0xffb32b,.40);amber.transmission=.78;amber.attenuationColor.set(0xe99004);amber.attenuationDistance=.7;
-  const crash=bevel(root,.40,.40,.40,amber,[0,0,0],.025);crash.castShadow=false;crash.userData.study='fuzzing-crash';
-  return {root,hotspots:{'fuzzing-mutation':chamber,'fuzzing-input':input,'fuzzing-crash':crash},parts:{caps,chamber,input,crash},update(p){
+  for(let i=0;i<18;i++)if(i!==16){const token=bevel(chamber,.25,.25,.25,i%4===0?chrome:blue,[0,0,0],.024);token.userData.corpusIndex=i;tokens.push(token);}
+  // A coated solid keeps its silhouette stable over refractive glass and metal.
+  const candidateMaterial=jewel(0x146cc7),seedColor=new T.Color(0x146cc7),amberColor=new T.Color(0xe7a21d);
+  const crash=bevel(root,.25,.25,.25,candidateMaterial,[0,0,0],.024);crash.userData.study='fuzzing-crash';
+  return {root,hotspots:{'fuzzing-mutation':chamber,'fuzzing-input':input,'fuzzing-crash':crash},parts:{caps,chamber,input,crash,tokens},update(p){
     root.rotation.y=-.2+p.turn;
     caps.forEach((cap,i)=>{cap.position.set((i?1:-1)*(1.60+p.open*.44),1.02,0);});
     input.position.set(-3.10+p.lift*.57,1.12+p.open*.12,.9);input.rotation.y=-.2+p.spread*.2;
-    tokens.forEach((token,i)=>{
+    tokens.forEach(token=>{
+      const i=token.userData.corpusIndex;
       const wave=Math.sin(i*2.1+p.scan*5)*p.spread;
       token.position.set(-.95+(i%6)*.38,-.30+Math.floor(i/12)*.49+wave*.16,-.31+Math.floor(i/6)%2*.62);
       token.rotation.set(p.spread*(i%3)*.25,p.scan*(i%4)*.35,p.spread*wave*.3);
     });
-    crash.position.set(.75+p.scan*1.8,1.2+p.lift*1.25,.12+p.spread*.3);crash.rotation.set(p.spread*.18,p.scan*.5,p.spread*.15);
+    const candidate=fuzzingCandidateLayout(p);
+    crash.position.set(candidate.x,candidate.y,candidate.z);crash.scale.setScalar(candidate.scale);
+    candidateMaterial.color.copy(seedColor).lerp(amberColor,p.lift);
+    crash.rotation.set(p.spread*.18,p.scan*.5,p.spread*.15);
   }};
 }
 
