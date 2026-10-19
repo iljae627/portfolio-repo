@@ -516,7 +516,6 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 .scene-android { --scene-color: #edf6ef; }
 .scene-reversing { --scene-color: #edf0fa; }
 .interest-art { position: absolute; inset: 0; transform: translate3d(0, calc(var(--scene-progress) * -2%), 0) scale(calc(1.02 + var(--scene-progress) * .07)); will-change: transform; }
-.interest-art img { object-fit: cover; object-position: 50% 57%; }
 .interest-copy { position: absolute; left: 24px; right: 24px; top: clamp(44px, 9svh, 100px); text-align: center; z-index: 1; opacity: var(--scene-reveal); transform: translate3d(0, calc((1 - var(--scene-reveal)) * 35px - var(--scene-progress) * 18px), 0); }
 .interest-copy > span { display: block; color: #5c656f; font-size: 10px; letter-spacing: .15em; font-weight: 600; margin-bottom: 12px; }
 .interest-copy h2 { font-size: clamp(37px, 4.3vw, 66px); font-weight: 750; line-height: 1.25; color: #191f28; text-wrap: balance; }
@@ -534,8 +533,6 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
  .interest-scene { height: 310svh; scroll-margin-top: 0; }
  .interest-stage { top: 66px; height: calc(100svh - 66px); min-height: 500px; }
  .interest-art { inset: 0; }
- .interest-art img { object-fit: cover; object-position: 58% 50%; }
- .scene-reversing .interest-art img { object-position: 50% 50%; }
  .interest-copy { top: 62px; left: 22px; right: 22px; }
  .interest-copy h2 { font-size: clamp(32px, 8vw, 42px); }
  .interest-copy > span { font-size: 9px; letter-spacing: .1em; }
@@ -552,7 +549,7 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 
 /* Geometry, rather than a camera pan over a flat image, owns the motion. */
 .interest-art { transform: none; will-change: auto; }
-.scene-webgl { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; touch-action: pan-y; }
+.scene-webgl { position: absolute; inset: 0; background: #e8e0d1; touch-action: pan-y; }
 .scene-webgl.is-ready { opacity: 1; }
 .scene-webgl canvas { display: block; width: 100%; height: 100%; }
 .study-overlay { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .2s; overflow: visible; }
@@ -573,7 +570,6 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
  .study-card { top: auto; bottom: 100px; right: 18px; left: 18px; width: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .study-overlay { transition: none; } }
-.interest-art:has(.scene-webgl.is-ready) > img { opacity: 0; }
 .interest-copy, .interest-visit { pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .scene-webgl { transition: none; } }
 
@@ -602,3 +598,5 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 
 .study-close { position:absolute; right:-8px; top:-8px; width:26px; height:26px; border:1px solid #dce3df; border-radius:50%; background:#fff; color:#52655a; box-shadow:0 2px 8px #28352f16; font-size:18px; line-height:1; cursor:pointer; }
 .study-close:focus-visible { outline:2px solid #4c7b67; outline-offset:3px; }
+
+.scene-unavailable { position:absolute; bottom:100px; width:100%; text-align:center; color:#596357; font-size:12px; }
