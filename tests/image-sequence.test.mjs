@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import sharp from 'sharp';
-import {frameIndex,frameURL,sequencePose,compactPose,imageFit,partRegion,sceneKinds,SEQUENCE_FRAMES,SEQUENCE_VERSION} from '../lib/image-sequence.mjs';
+import {frameIndex,frameURL,sequencePose,compactPose,imageFit,partRegion,sceneKinds,SEQUENCE_FRAMES,SEQUENCE_VERSION,HDD_SCREW_HOLES} from '../lib/image-sequence.mjs';
 
 test('scroll positions select bounded frames and reconstruct the same pose on reverse',()=>{
  assert.equal(frameIndex(NaN),0);assert.equal(frameIndex(-1),0);assert.equal(frameIndex(2),239);
@@ -31,11 +31,11 @@ test('mobile poses and fit map interactive hit regions into the same raster coor
  assert.ok(fit.x>=0&&fit.y>=0);
  assert.ok(frameURL('forensics',5,true).endsWith('/small/005.webp'));
 });
-test('all five scenes have 240 decodable desktop and mobile frames, without missing ends',async()=>{
- const root=`public/sequences/${SEQUENCE_VERSION}`;
+test('all three raster scenes have 240 decodable desktop and mobile frames, without missing ends',async()=>{
+ const root=`public/sequences/${SEQUENCE_VERSION,HDD_SCREW_HOLES}`;
  for(const kind of sceneKinds){
   for(const small of [false,true]){
-   const dir=`${root}/${kind}${small?'/small':''}`;
+   const dir='public'+frameURL(kind,0,small).slice(0,-'000.webp'.length);
    const files=(await fs.readdir(dir)).filter(f=>f.endsWith('.webp'));
    assert.equal(files.length,SEQUENCE_FRAMES);
    for(let frame=0;frame<SEQUENCE_FRAMES;frame++){
@@ -44,4 +44,16 @@ test('all five scenes have 240 decodable desktop and mobile frames, without miss
    }
   }
  }
+});
+
+test('six screw heads start on the actual cover holes and clear before the lid moves',()=>{
+ const initial=sequencePose('forensics',0),heads=initial.parts.filter(p=>p.key.startsWith('screw-head'));
+ assert.equal(heads.length,6);
+ for(let i=0;i<heads.length;i++)assert.deepEqual([heads[i].x,heads[i].y],HDD_SCREW_HOLES[i]);
+ const removed=sequencePose('forensics',Math.floor(.4*239));
+ assert.ok(removed.parts.filter(p=>p.key.startsWith('screw-head')).every(p=>p.alpha===0));
+ assert.ok(removed.parts.find(p=>p.key==='cover').angle===0);
+});
+test('Android frames have no separate floating shield',()=>{
+ for(let i=0;i<240;i++)assert.ok(sequencePose('android',i).parts.every(p=>p.key!=='shield'));
 });

@@ -3,12 +3,13 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import SequenceScene from "./SequenceScene";
+import CyberScene from "./CyberScene";
 
 const scenes = [
   {id: "forensics", label: "DIGITAL FORENSICS", title: "디지털 포렌식", href: "/work/digital-forensics"},
   {id: "android", label: "ANDROID SECURITY", title: "Android 앱 분석", href: "/work/android-security"},
   {id: "reversing", label: "REVERSE ENGINEERING", title: "리버스 엔지니어링", href: "/projects"},
-  {id: "web3", label: "WEB3 SECURITY", title: "스마트 계약 보안", href: "https://iljae627.github.io/posts/ethernaut-all-clear/"},
+  {id: "web", label: "WEB HACKING", title: "웹 해킹", href: "/archive"},
   {id: "fuzzing", label: "FUZZING", title: "퍼징 실습", href: "https://iljae627.github.io/posts/fuzzing101-three-exercises/"},
 ];
 const clamp = value => Math.min(1, Math.max(0, value));
@@ -57,7 +58,7 @@ export default function InterestScenes() {
       </nav>
       {scenes.map(scene => <section className={`interest-scene scene-${scene.id}`} id={scene.id} key={scene.id} aria-labelledby={`${scene.id}-title`}>
         <div className="interest-stage">
-          <div className="interest-art"><SequenceScene kind={scene.id} control={controls.current[scene.id]} /></div>
+          <div className="interest-art">{["reversing","web"].includes(scene.id) ? <CyberScene kind={scene.id} control={controls.current[scene.id]}/> : <SequenceScene kind={scene.id} control={controls.current[scene.id]}/>}</div>
           <div className="interest-copy"><span>{scene.label}</span>{scene.id === 'forensics' ? <h1 id={`${scene.id}-title`}>{scene.title}</h1> : <h2 id={`${scene.id}-title`}>{scene.title}</h2>}</div>
           <Link className="interest-visit" href={scene.href}>기록 보기 <ArrowUpRight size={15} /></Link>
         </div>

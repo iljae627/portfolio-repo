@@ -1,13 +1,21 @@
 [
   {
     "id": "manual-collector-team-project",
-    "title": "Collector · npm 공격 검증 도구 — 동아리 여름방학 팀 프로젝트",
+    "title": "TrustGate · npm 공급망 계보 검증 — Rootkeepers 여름방학 팀 프로젝트",
     "url": "https://iljae627-portfolio.vercel.app/work/collector",
     "source": "활동 기록",
     "category": "Development",
-    "tags": ["npm", "Sigstore", "Rekor", "팀 프로젝트", "여름방학"],
+    "tags": [
+      "npm",
+      "GitHub",
+      "Sigstore",
+      "Rekor",
+      "Python",
+      "팀 프로젝트",
+      "여름방학"
+    ],
     "date": "2026-10-19",
-    "summary": "동아리 여름방학에 진행한 npm 공격 검증 도구 팀 프로젝트. Sigstore·Rekor 수집기 개발을 맡았으며 이후 작업은 팀원들과 함께 진행했습니다. 활동 기간은 여름방학, 이 기록의 정리일은 2026-10-19입니다.",
+    "summary": "Rootkeepers의 npm 공급망 검증 도구 TrustGate 팀 프로젝트. Sigstore·Rekor 수집기(Track C) 개발을 맡아 provenance·OIDC 신원·투명성 로그 자료를 정리했고, 이후 작업은 팀원들과 함께 진행했습니다. 활동 기간은 여름방학, 기록 정리일은 2026-10-19입니다.",
     "thumbnail": null
   },
   {

@@ -1,10 +1,10 @@
 import sharp from 'sharp';
 import fs from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {SEQUENCE_FRAMES,SEQUENCE_WIDTH as W,SEQUENCE_HEIGHT as H,SEQUENCE_VERSION,sceneKinds,sequencePose,compactPose} from '../lib/image-sequence.mjs';
+import {SEQUENCE_FRAMES,SEQUENCE_WIDTH as W,SEQUENCE_HEIGHT as H,SEQUENCE_VERSION,sceneKinds,sequencePose,compactPose,sequenceVersions} from '../lib/image-sequence.mjs';
 sharp.concurrency(2);sharp.cache({memory:64,files:20,items:60});
 const root=`public/sequences/${SEQUENCE_VERSION}`;
-const requested=process.argv.slice(2),kinds=requested.length?requested:sceneKinds;
+const requested=process.argv.slice(2),kinds=requested.length?requested:sceneKinds.filter(kind=>sequenceVersions[kind]===SEQUENCE_VERSION);
 const extracted={};
 const rectangles={fuzzing:[[0,0,750,510],[770,0,375,510],[1155,0,381,510],[0,535,565,460],[640,555,340,410],[1015,530,521,470]],forensics:[[0,0,535,510],[530,0,535,510],[1055,0,481,510],[0,512,512,512],[512,512,512,512],[1024,512,512,512],[125,615,110,150],[130,615,95,57]],android:[[0,0,510,615],[512,0,510,615],[1024,0,512,610],[0,620,510,404],[512,620,510,404],[1024,620,512,404]]};
 for(const kind of kinds){
