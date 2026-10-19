@@ -11,7 +11,10 @@ for(const kind of kinds){
  const input=await fs.readFile(`public/images/sequence-sources/${kind}-atlas.png`);
  const cells=rectangles[kind]||Array.from({length:6},(_,i)=>[i%3*512,Math.floor(i/3)*512,512,512]);
  extracted[kind]=await Promise.all(cells.map(async ([left,top,width,height],cell)=>{
-  const {data,info}=await sharp(input).extract({left,top,width,height}).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+  const rear=kind==='android'&&cell<2;
+  const source=rear?await fs.readFile('public/images/sequence-sources/android-rear-pair-v4.png'):input;
+  const crop=rear?{left:cell*768,top:0,width:768,height:1024}:{left,top,width,height};
+  const {data,info}=await sharp(source).extract(crop).ensureAlpha().raw().toBuffer({resolveWithObject:true});
   // Clean almost transparent edge noise before the mechanical cell trim.
   for(let i=3;i<data.length;i+=4)if(data[i]<10)data[i]=0;
   if(kind==='forensics'&&cell<3){
@@ -40,7 +43,7 @@ for(const kind of kinds){
   const key=[part.cell,Math.round(part.w),Math.round(part.h),part.angle.toFixed(1),part.alpha.toFixed(2)].join(':');
   if(cache.has(key))return cache.get(key);
   const promise=(async()=>{
-   let img=sharp(extracted[kind][part.cell]).resize(Math.round(part.w),Math.round(part.h),{fit:kind==='forensics'&&part.cell<2?'fill':'contain',background:'#00000000'});
+   let img=sharp(extracted[kind][part.cell]).resize(Math.round(part.w),Math.round(part.h),{fit:['forensics','android'].includes(kind)&&part.cell<2?'fill':'contain',background:'#00000000'});
    if(Math.abs(part.angle)>.01)img=img.rotate(part.angle,{background:'#00000000'});
    let {data,info}=await img.ensureAlpha().raw().toBuffer({resolveWithObject:true});
    if(part.alpha<1)for(let i=3;i<data.length;i+=4)data[i]=Math.round(data[i]*part.alpha);
@@ -74,6 +77,7 @@ for(const kind of kinds){
   if(frame%60===0)console.log(kind,frame+'/'+SEQUENCE_FRAMES);
  }
  manifest.scenes[kind]={bytes,sourceSha256:createHash('sha256').update(await fs.readFile(`public/images/sequence-sources/${kind}-atlas.png`)).digest('hex')};
+ if(kind==='android')manifest.scenes[kind].rearPairSha256=createHash('sha256').update(await fs.readFile('public/images/sequence-sources/android-rear-pair-v4.png')).digest('hex');
  console.log(kind,'complete',Math.round(bytes/1024/1024*10)/10+'MB');
 }
 await fs.mkdir(root,{recursive:true});
