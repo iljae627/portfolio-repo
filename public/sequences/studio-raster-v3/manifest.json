@@ -1,0 +1,17 @@
+{
+  "version": "studio-raster-v3",
+  "count": 240,
+  "width": 1280,
+  "height": 832,
+  "scenes": {
+    "forensics": {
+      "bytes": 27178056,
+      "sourceSha256": "3b8fff9e376c36c6c2e28b48a9b017c4f1113afb17d0daaa4b3c75a06c7f569a"
+    },
+    "android": {
+      "bytes": 31953214,
+      "sourceSha256": "6a9e592ad973881d44dddbf920ab02915545e705ab127f9275b772f052d852ca"
+    }
+  },
+  "method": "AI-generated photographic cutout assets composited into deterministic raster frames; no runtime 3D"
+}
