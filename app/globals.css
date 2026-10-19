@@ -600,3 +600,13 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 .study-close:focus-visible { outline:2px solid #4c7b67; outline-offset:3px; }
 
 .scene-unavailable { position:absolute; bottom:100px; width:100%; text-align:center; color:#596357; font-size:12px; }
+
+/* Photographic raster sequences. No WebGL context or legacy concept backdrop. */
+.scene-sequence { position:absolute; inset:0; touch-action:pan-y; background:#f1eadc url('/images/sequence-sources/studio-background.webp') center/cover no-repeat; }
+.scene-sequence canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+.scene-sequence .sequence-poster { position:absolute; inset:0 0 70px; }
+.scene-sequence .sequence-poster img { width:100%; height:100%; object-fit:contain; }
+.scene-sequence.is-ready .sequence-poster { visibility:hidden; }
+.scene-sequence[data-study-open="true"] .study-overlay { opacity:.75; }
+.scene-sequence .study-card { z-index:4; }
+.scene-sequence .study-toggle { z-index:3; }
