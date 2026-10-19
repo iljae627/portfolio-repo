@@ -61,3 +61,15 @@ export function foliageShadow() {
   const fade=x.createRadialGradient(256,256,100,256,256,252);fade.addColorStop(0,'white');fade.addColorStop(1,'transparent');x.fillStyle=fade;x.fillRect(0,0,512,512);
   return new T.CanvasTexture(c);
 }
+
+export function batteryMark(){
+  if(typeof document==='undefined')return null;
+  const c=document.createElement('canvas');c.width=384;c.height=576;const x=c.getContext('2d');
+  x.fillStyle='#b2bab7';x.font='500 42px sans-serif';x.fillText('Li-ion',24,76);
+  x.lineWidth=3;x.strokeStyle='#a5aeaa';x.strokeRect(25,123,126,69);x.fillRect(151,143,8,28);
+  x.font='22px sans-serif';x.fillText('RECHARGEABLE',24,235);
+  for(let i=0;i<6;i++)x.fillRect(25,265+i*18,250-(i%3)*25,3);
+  x.font='55px sans-serif';x.fillText('↺',24,470);
+  x.font='17px sans-serif';x.fillText('RECYCLE',24,514);
+  const texture=new T.CanvasTexture(c);texture.colorSpace=T.SRGBColorSpace;return texture;
+}

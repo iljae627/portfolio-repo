@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
-import {brushedMetal,phoneDisplay} from './studio-surfaces.js';
+import {brushedMetal,phoneDisplay,batteryMark} from './studio-surfaces.js';
 import {forensicLayout,androidLayout,fuzzingCandidateLayout} from '../lib/scene-motion.mjs';
 
 const metal = brushedMetal;
@@ -101,24 +101,70 @@ function screw(parent,x,y,z) {
   const group=new T.Group(); parent.add(group); group.position.set(x,y,z);
   const top=mesh(group,new T.CylinderGeometry(.075,.075,.035,20),metal(0x9da6b3)); top.rotation.x=Math.PI/2;
   box(group,.075,.014,.004,ceramic(0x475366),[0,0,.02]);
-  const stem=mesh(group,new T.CylinderGeometry(.028,.028,.12,12),metal(0xbcc2c9),[0,0,-.07]); stem.rotation.x=Math.PI/2;
+  const stem=mesh(group,new T.CylinderGeometry(.028,.028,.20,16),metal(0xbcc2c9),[0,0,-.10]); stem.rotation.x=Math.PI/2;
   return group;
 }
 
-export function buildForensics() {
-  const root=new T.Group(), device=new T.Group(); root.add(device);
-  root.userData.study='forensics-files';
-  device.rotation.x=-Math.PI/2; device.rotation.z=-.12; device.position.y=.4;
-  const silver=metal(0xd4d9df), edge=metal(0x8b98a7), dark=ceramic(0x263442);
-  panel(device,3.85,2.6,.24,silver,[0,0,0],.22);
-  panel(device,3.64,2.39,.04,dark,[0,0,.13],.17);
+// Cylinders are aligned with the device's depth axis (local Z).
+function axialCylinder(parent,radius,depth,material,position){
+  const item=mesh(parent,new T.CylinderGeometry(radius,radius,depth,96),material,position);item.rotation.x=Math.PI/2;return item;
+}
+function annulus(parent,outer,inner,depth,material,position){
+  const shape=new T.Shape();shape.absarc(0,0,outer,0,Math.PI*2,false);
+  const hole=new T.Path();hole.absarc(0,0,inner,0,Math.PI*2,true);shape.holes.push(hole);
+  const geometry=new T.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:64});geometry.translate(0,0,-depth/2);
+  return mesh(parent,geometry,material,position);
+}
+export function buildForensics(){
+  const root=new T.Group(),device=new T.Group();root.add(device);root.userData.study='forensics-files';
+  device.rotation.x=-Math.PI/2;device.rotation.z=-.12;device.position.y=.4;
+  const silver=metal(0xc8cfd6),edge=metal(0x727d88),dark=ceramic(0x222a31);
+  const base=panel(device,3.85,2.6,.24,silver,[0,0,0],.22);
+  panel(device,3.58,2.34,.025,dark,[0,0,.13],.16);
   const shell=roundedShape(3.85,2.6,.22);shell.holes.push(roundedShape(3.49,2.2,.12,T.Path));
-  const shellGeometry=new T.ExtrudeGeometry(shell,{depth:.25,bevelEnabled:true,bevelSegments:5,bevelSize:.015,bevelThickness:.012,curveSegments:20});
+  const shellGeometry=new T.ExtrudeGeometry(shell,{depth:.25,bevelEnabled:true,bevelSegments:5,bevelSize:.012,bevelThickness:.01,curveSegments:32});
   mesh(device,shellGeometry,silver,[0,0,.12]);
-  for(let i=0;i<9;i++)panel(device,.32,.018,.012,edge,[-1.4+i*.35,.78,.14],.008);
-  const circuit=board(device,3.42,2.16,.18);
-  const chips=[chip(circuit,.88,.68,.13,-.85,.35),chip(circuit,.88,.68,.13,.4,.35),chip(circuit,.65,.46,.13,-.7,-.55)];
-  chips[0].userData.study='forensics-logs';
+  // Threaded bosses align with the lid bores; their smaller holes remain after removal.
+  const baseBores=[];
+  for(const [x,y] of [[-1.65,-1.04],[1.65,-1.04],[-1.65,1.04],[1.65,1.04]]){
+    const boss=new T.Group();device.add(boss);boss.position.set(x,y,.235);
+    annulus(boss,.105,.034,.27,silver,[0,0,0]);
+    annulus(boss,.059,.034,.008,edge,[0,0,.139]);
+    const points=[];for(let i=0;i<=120;i++){const t=i/120;points.push(new T.Vector3(Math.cos(t*Math.PI*12)*.035,Math.sin(t*Math.PI*12)*.035,-.095+t*.21));}
+    mesh(boss,new T.TubeGeometry(new T.CatmullRomCurve3(points),120,.0018,5,false),dark);
+    baseBores.push(boss);
+  }
+  const mechanism=new T.Group();device.add(mechanism);
+  mechanism.userData.study='forensics-files';
+  const platterMaterial=new T.MeshPhysicalMaterial({color:0xc7ccd2,metalness:1,roughness:.13,clearcoat:.35,anisotropy:.65});
+  const platters=[];
+  for(const z of [.215,.285]){
+    const disc=new T.Group();mechanism.add(disc);disc.position.set(-.52,.08,z);
+    annulus(disc,.935,.145,.026,platterMaterial,[0,0,0]);
+
+    platters.push(disc);
+  }
+  const spindle=new T.Group();mechanism.add(spindle);spindle.position.set(-.52,.08,.30);
+  axialCylinder(spindle,.145,.22,edge,[0,0,-.085]);
+  annulus(spindle,.225,.065,.030,silver,[0,0,.018]);
+  axialCylinder(spindle,.061,.025,edge,[0,0,.035]);
+  for(let i=0;i<6;i++){const a=i*Math.PI/3;fastener(spindle,[Math.cos(a)*.175,Math.sin(a)*.175,.04],'z',.022);}
+  const actuator=new T.Group();mechanism.add(actuator);actuator.position.set(1.03,-.58,.335);actuator.userData.study='forensics-logs';
+  axialCylinder(actuator,.19,.09,edge,[0,0,-.035]);axialCylinder(actuator,.11,.035,silver,[0,0,.020]);fastener(actuator,[0,0,.04],'z',.044);
+  const armShape=new T.Shape();armShape.moveTo(.1,-.08);armShape.lineTo(-.12,-.16);armShape.lineTo(-1.44,.84);armShape.lineTo(-1.40,.95);armShape.lineTo(-.05,.18);armShape.lineTo(.10,.08);armShape.closePath();
+  const armHole=new T.Path();armHole.moveTo(-.28,.18);armHole.lineTo(-1.12,.78);armHole.lineTo(-.30,.36);armHole.closePath();armShape.holes.push(armHole);
+  const armGeometry=new T.ExtrudeGeometry(armShape,{depth:.025,bevelEnabled:true,bevelSize:.005,bevelThickness:.004,bevelSegments:3});
+  const headArm=mesh(actuator,armGeometry,silver,[0,0,-.01]);
+  bevel(actuator,.09,.035,.015,dark,[-1.42,.91,-.025],.007);
+  rod(actuator,[-1.18,.72,.019],[-1.42,.91,.019],.006,metal(0xe6c78e));
+  for(let i=0;i<12;i++){const coil=mesh(actuator,new T.TorusGeometry(.17+i*.003,.0022,4,64),metal(0xb77435),[.29,-.18,.006]);coil.scale.set(1.15,.75,1);}
+  bevel(mechanism,.64,.43,.065,edge,[1.31,-.76,.235],.07);
+  // Recirculation filter and the flexible head-stack connection.
+  bevel(mechanism,.61,.15,.07,ceramic(0xdde0dc),[1.03,.88,.215],.025);
+  for(let i=0;i<15;i++)box(mechanism,.015,.10,.007,ceramic(0xb6bcb9),[.78+i*.033,.88,.257]);
+  const flex=new T.Shape();flex.moveTo(1.13,-.45);flex.bezierCurveTo(1.53,-.22,1.49,.36,1.33,.59);flex.lineTo(1.43,.62);flex.bezierCurveTo(1.62,.3,1.62,-.24,1.20,-.52);flex.closePath();
+  mesh(mechanism,new T.ExtrudeGeometry(flex,{depth:.006,bevelEnabled:false,curveSegments:24}),ceramic(0xaa6930),[0,0,.21]);
+  const underside=board(device,2.85,1.65,-.16,0x183d35);underside.rotation.x=Math.PI;
   const lid=new T.Group(); device.add(lid); lid.position.set(0,1.25,.44);
   const screwCenters=[[-1.65,-1.04],[1.65,-1.04],[-1.65,1.04],[1.65,1.04]];
   const lidShape=roundedShape(3.85,2.6,.22);
@@ -134,8 +180,10 @@ export function buildForensics() {
   for(let i=0;i<14;i++)panel(lid,.55,.012,.004,edge,[.75,-.95-i*.033,.057],.005);
   for(const x of [-1.45,1.45])panel(lid,.08,.08,.008,edge,[x,-1.25,.06],.02);
   const screws=[[-1.65,-1.04],[1.65,-1.04],[-1.65,1.04],[1.65,1.04]].map(([x,y])=>screw(device,x,y,.51));
-  panel(device,.55,.12,.025,dark,[.85,-1.305,-.02],.04).rotation.x=Math.PI/2;
-  panel(device,.42,.035,.025,ceramic(0x2872e8),[.85,-1.325,-.02],.015).rotation.x=Math.PI/2;
+  // Stamped cover contour and separate SATA data/power contacts.
+  mesh(lid,new T.TorusGeometry(.96,.006,6,128),edge,[-.52,.08-1.25,.057]);
+  const sata=bevel(device,1.36,.09,.13,dark,[.58,-1.31,-.025],.018);
+  for(let i=0;i<22;i++)box(device,.026,.014,.055,metal(0xc4a05b),[-.03+i*.054,-1.362,-.01]);
   const lens=new T.Group(); root.add(lens); lens.rotation.x=-.42; lens.rotation.y=.1;
   lens.userData.study='forensics-cloud';
   mesh(lens,new T.TorusGeometry(.61,.045,24,96),silver);
@@ -146,22 +194,14 @@ export function buildForensics() {
   for(let i=0;i<15;i++){
     const t=i/20;rod(lens,[.66+t*.27,-.66-t*.30,-.006],[.71+t*.27,-.62-t*.30,-.006],.009,edge);
   }
-  const scan=mesh(circuit,new T.PlaneGeometry(2.9,.065),new T.MeshBasicMaterial({color:0x72d9ff,transparent:true,opacity:0,side:T.DoubleSide,depthWrite:false}),[0,-.85,.27]);
-  const nodes=[];
-  for(let i=0;i<9;i++) nodes.push(mesh(circuit,new T.SphereGeometry(.035,12,12),new T.MeshBasicMaterial({color:0x44bbef}),[-1.15+i*.28,.82,.23]));
-  return {root,hotspots:{'forensics-files':circuit,'forensics-logs':chips[0],'forensics-cloud':lens},parts:{lid,lidPlate,screws,lens,circuit,chips},update(p,compact){
-    const layout=forensicLayout(p);
-    root.rotation.y=-.24+p.turn;
-    lid.rotation.x=-p.open*1.65;
-    lid.position.z=.44+p.open*.18;
-    circuit.position.z=.18+p.lift*.7;
-    chips.forEach((c,i)=>{c.position.z=.13+p.spread*(.38+i*.22);c.rotation.z=p.spread*(i-1)*.12;});
-    screws.forEach((s,i)=>{s.position.set(layout.screws[i].x,layout.screws[i].y,layout.screws[i].z);s.rotation.z=p.unscrew*Math.PI*4;});
-    lens.visible=layout.lens.visible;
-    lens.position.set(layout.lens.x,layout.lens.y,layout.lens.z);
-    lens.scale.setScalar(.82);lens.rotation.z=-.24+(1-p.lens)*.6;
-    scan.position.y=-.85+p.scan*1.7; scan.material.opacity=p.scan>0?.35:0;
-    nodes.forEach((n,i)=>{n.scale.setScalar(1+p.scan*Math.sin(i*.8+p.scan*4)*.6);});
+  return {root,hotspots:{'forensics-files':platters[1],'forensics-logs':actuator,'forensics-cloud':lens},parts:{lid,lidPlate,screws,lens,circuit:mechanism,chips:[],platters,spindle,actuator,headArm,baseBores,base,device,underside,sata},update(p){
+    const layout=forensicLayout(p);root.rotation.y=-.24+p.turn;
+    lid.rotation.x=-p.open*1.65;lid.position.z=.44+p.open*.18;
+    mechanism.position.z=p.lift*.055;
+    platters.forEach((disc,i)=>{disc.rotation.z=p.scan*(1.4+i*.2);});
+    actuator.rotation.z=-p.scan*.23;
+    screws.forEach((item,i)=>{item.position.set(layout.screws[i].x,layout.screws[i].y,layout.screws[i].z);item.rotation.z=p.unscrew*Math.PI*4;});
+    lens.visible=layout.lens.visible;lens.position.set(layout.lens.x,layout.lens.y,layout.lens.z);lens.scale.setScalar(.82);lens.rotation.z=-.24+(1-p.lens)*.6;
   }};
 }
 
@@ -183,42 +223,81 @@ function androidRobot(parent) {
   for(const x of [-.23,.23]) mesh(root,new T.CapsuleGeometry(.115,.33,8,16),green,[x,.26,0]);
   return {root,head,arms};
 }
-export function buildAndroid() {
-  const root=new T.Group(), phone=new T.Group(); root.add(phone);phone.position.set(-.6,1.94,.1);phone.rotation.y=-.16;
-  root.userData.study='android-track';
-  const silver=metal(0xc8d2d5), graphite=ceramic(0x1e2c32);
-  panel(phone,1.8,3.45,.2,silver,[0,0,0],.23);
-  panel(phone,1.73,3.38,.035,metal(0x76848b),[0,0,.112],.21);
-  for(const y of [.55,.95])bevel(phone,.05,.28,.08,silver,[.92,y,0],.02);
-  bevel(phone,.05,.46,.08,silver,[-.92,.65,0],.02);
-  for(let i=0;i<7;i++)bevel(phone,.045,.02,.05,graphite,[-.48+i*.16,-1.737,0],.008);
-  bevel(phone,.24,.025,.09,graphite,[0,-1.737,0],.012);
-  const frameShape=roundedShape(1.8,3.45,.23);frameShape.holes.push(roundedShape(1.58,3.15,.16,T.Path));
-  const frameGeometry=new T.ExtrudeGeometry(frameShape,{depth:.25,bevelEnabled:true,bevelSize:.008,bevelThickness:.008,bevelSegments:5,curveSegments:32});
-  const frame=mesh(phone,frameGeometry,silver,[0,0,.08]);
-  const circuit=board(phone,1.58,3.15,.12,0x254f45);
-  const core=chip(circuit,.76,.66,.13,0,.5);
-  circuit.userData.study='android-runtime';
-  panel(circuit,.78,1.35,.11,ceramic(0x35494d),[0,-.58,.09],.06);
-  const screen=new T.Group();phone.add(screen);
-  screen.userData.study='android-static';
-  panel(screen,1.7,3.34,.07,graphite,[0,0,0],.2);
-  const display=mesh(screen,new T.PlaneGeometry(1.55,3.15),new T.MeshBasicMaterial({map:phoneDisplay(),color:0xffffff,transparent:true,alphaTest:.02}),[0,0,.055]);
-  display.castShadow=false;display.receiveShadow=false;
-  mesh(screen,new T.CircleGeometry(.036,32),graphite,[0,1.39,.058]);
-  mesh(screen,new T.CircleGeometry(.018,32),jewel(0x174363),[0,1.39,.06]);
-  for(let i=0;i<9;i++)box(screen,.018,.008,.006,metal(0x74828a),[-.12+i*.03,1.51,.058]);
-  const robot=androidRobot(root);robot.root.position.set(1.25,0,.35);robot.root.rotation.y=-.15;
-  return {root,hotspots:{'android-track':robot.root,'android-static':screen,'android-runtime':core},parts:{screen,frame,core,circuit,display},update(p,compact){
-    const layout=androidLayout(p);
-    root.rotation.y=.05+p.turn;
-    screen.position.set(layout.screen.x,0,layout.screen.z);
-    screen.rotation.y=-p.open*.12;
+function mobileBGA(parent,w,h,position){
+  const root=new T.Group();parent.add(root);root.position.set(...position);
+  bevel(root,w,h,.024,ceramic(0x171c23),[0,0,0],.015);
+  const balls=new T.InstancedMesh(new T.SphereGeometry(.0065,8,6),metal(0xbfc4c9),36),matrix=new T.Matrix4();
+  for(let i=0;i<36;i++){matrix.makeTranslation(-w*.36+(i%6)*w*.72/5,-h*.36+Math.floor(i/6)*h*.72/5,-.017);balls.setMatrixAt(i,matrix);}root.add(balls);
+  for(let i=0;i<3;i++)box(root,w*.52-i*.025,.005,.002,ceramic(0x88929b),[-w*.04,h*.20-i*.035,.014]);
+  return root;
+}
+export function buildAndroid(){
+  const root=new T.Group(),phone=new T.Group();root.add(phone);phone.position.set(-.6,1.94,.1);phone.rotation.y=-.16;root.userData.study='android-track';
+  const silver=metal(0xbfc8ce),graphite=ceramic(0x1b242b),pcb=ceramic(0x133d3a),gold=metal(0xc5a35d);
+  const cameraSpecs=[[-.52,1.24,.115],[-.52,.85,.105],[-.16,1.40,.075]];
+  const backShape=roundedShape(1.8,3.45,.23);
+  for(const [x,y,r] of cameraSpecs){const aperture=new T.Path();aperture.absarc(x,y,r+.008,0,Math.PI*2,true);backShape.holes.push(aperture);}
+  const backGeometry=new T.ExtrudeGeometry(backShape,{depth:.035,bevelEnabled:true,bevelSize:.003,bevelThickness:.003,bevelSegments:3,curveSegments:32});backGeometry.translate(0,0,-.0175);
+  const back=mesh(phone,backGeometry,silver);
+  const frameShape=roundedShape(1.8,3.45,.23);frameShape.holes.push(roundedShape(1.61,3.20,.17,T.Path));
+  const frameGeometry=new T.ExtrudeGeometry(frameShape,{depth:.10,bevelEnabled:true,bevelSize:.004,bevelThickness:.004,bevelSegments:4,curveSegments:32});
+  const frame=mesh(phone,frameGeometry,silver,[0,0,.022]);
+  for(const y of [.55,.95])bevel(phone,.035,.26,.045,silver,[.907,y,.075],.007);
+  bevel(phone,.035,.43,.045,silver,[-.907,.65,.075],.007);
+  for(let i=0;i<6;i++)bevel(phone,.034,.016,.025,graphite,[-.52+i*.105,-1.732,.073],.004);
+  const circuit=new T.Group();phone.add(circuit);circuit.userData.study='android-runtime';
+  const mainboard=bevel(circuit,.94,.89,.018,pcb,[.29,1.075,.043],.012);
+  bevel(circuit,.15,2.15,.018,pcb,[-.725,-.18,.043],.008);
+  const chargingBoard=bevel(circuit,1.48,.27,.018,pcb,[0,-1.435,.043],.012);
+  const core=mobileBGA(circuit,.46,.41,[.29,1.105,.077]);
+  const memory=mobileBGA(circuit,.31,.20,[.44,.775,.075]);
+  const shield=new T.Group();circuit.add(shield);shield.position.set(.29,1.105,.103);
+  bevel(shield,.53,.47,.012,silver,[0,0,0],.016);
+  for(let i=0;i<8;i++)box(shield,.23,.003,.002,metal(0x74818c),[-.05,.12-i*.024,.009]);
+  // Surface-mount passives and short parallel buses, rather than large DIP pins.
+  const passives=new T.InstancedMesh(new RoundedBoxGeometry(.028,.044,.013,2,.003),ceramic(0x343f44),54),matrix=new T.Matrix4();
+  for(let i=0;i<54;i++){
+    const row=Math.floor(i/9),x=-.09+(i%9)*.075,y=row<3?1.38-row*.065:.70+(row-3)*.055;
+    matrix.makeTranslation(x,y,.072);passives.setMatrixAt(i,matrix);
+  }circuit.add(passives);
+  for(let i=0;i<9;i++)trace(circuit,[[.02+i*.037,.87,.058],[.02+i*.037,.93,.058],[.05+i*.037,.97,.058]],0x8f9875);
+  const battery=bevel(circuit,1.25,1.80,.052,ceramic(0x32383a),[0,-.32,.061],.012);
+  bevel(battery,1.18,1.70,.002,metal(0x707775),[0,0,.028],.001);
+  const batteryLabel=mesh(battery,new T.PlaneGeometry(.80,1.18),new T.MeshBasicMaterial({map:batteryMark(),transparent:true,alphaTest:.02,depthWrite:false}),[0,0,.033]);batteryLabel.castShadow=false;
+  // Pouch seams and adhesive pull tabs.
+  for(const x of [-.57,.57])box(battery,.008,1.60,.003,ceramic(0xa4aeaa),[x,0,.030]);
+  for(let i=0;i<5;i++)box(battery,.45-i*.035,.007,.002,ceramic(0x30383a),[-.18,.46-i*.045,.032]);
+  for(const x of [-.38,.38])bevel(circuit,.11,.20,.005,ceramic(0xb5bbad),[x,-1.17,.092],.002);
+  const cameras=[];
+  for(const [x,y,r] of cameraSpecs){
+    const camera=new T.Group();circuit.add(camera);camera.position.set(x,y,.059);
+    bevel(camera,r*2.5,r*2.5,.035,graphite,[0,0,0],.012);
+    bevel(camera,r*2.15,r*2.15,.006,silver,[0,0,.022],.002);
+    // Rear-facing lens barrels project through the rear, not through the display.
+    axialCylinder(camera,r,.065,graphite,[0,0,-.050]);
+    mesh(camera,new T.TorusGeometry(r*.85,.009,12,48),silver,[0,0,-.086]);
+    const lens=mesh(camera,new T.CircleGeometry(r*.72,48),jewel(0x163b56),[0,0,-.087]);lens.rotation.y=Math.PI;
+    cameras.push(camera);
+  }
+  const flex=bevel(circuit,.092,1.75,.006,ceramic(0x96602e),[.655,-.30,.089],.002);
+  for(let i=0;i<4;i++)box(flex,.004,1.60,.002,gold,[-.03+i*.02,0,.004]);
+  for(const y of [.64,-1.22]){bevel(circuit,.28,.075,.028,graphite,[.56,y,.073],.004);for(let i=0;i<9;i++)box(circuit,.012,.05,.006,gold,[.45+i*.028,y,.090]);}
+  bevel(circuit,.44,.16,.05,metal(0x7d898b),[-.46,-1.44,.077],.008);
+  bevel(circuit,.42,.19,.052,graphite,[.47,-1.44,.078],.012);
+  bevel(phone,.24,.043,.07,silver,[0,-1.729,.071],.008);bevel(phone,.19,.020,.053,graphite,[0,-1.755,.071],.004);
+  const screen=new T.Group();phone.add(screen);screen.userData.study='android-static';
+  bevel(screen,1.74,3.39,.022,graphite,[0,0,0],.004);
+  const display=mesh(screen,new T.PlaneGeometry(1.61,3.23),new T.MeshBasicMaterial({map:phoneDisplay(),color:0xffffff,transparent:true,alphaTest:.02}),[0,0,.022]);display.castShadow=false;display.receiveShadow=false;
+  mesh(screen,new T.CircleGeometry(.028,32),graphite,[0,1.47,.024]);
+  for(let i=0;i<7;i++)box(screen,.015,.005,.003,metal(0x74828a),[-.09+i*.03,1.59,.024]);
+  const robot=androidRobot(root);robot.root.rotation.y=-.15;
+  return {root,hotspots:{'android-track':robot.root,'android-static':screen,'android-runtime':core},parts:{phone,back,screen,frame,core,circuit,display,battery,mainboard,chargingBoard,memory,cameras,shield,flex},update(p,compact){
+    const layout=androidLayout(p);root.rotation.y=.05+p.turn;
+    screen.position.set(layout.screen.x,0,layout.screen.z);screen.rotation.y=-p.open*.12;
     core.position.z=layout.coreZ;
-    robot.head.rotation.z=-p.scan*.14;
-    robot.head.position.y=1.28+p.scan*.15;
-    robot.arms[1].rotation.z=p.open*.45;
-    robot.arms[0].rotation.z=-p.scan*.3;
+    shield.position.z=.103+p.lift*.25;shield.position.x=.29+p.lift*.80;
+    robot.head.rotation.z=-p.scan*.14;robot.head.position.y=1.28+p.scan*.15;
+    robot.arms[1].rotation.z=p.open*.45;robot.arms[0].rotation.z=-p.scan*.3;
     robot.root.position.set(compact?1.15:3.35,0,compact?.7:.15);robot.root.scale.setScalar(compact?.6:.78);
   }};
 }

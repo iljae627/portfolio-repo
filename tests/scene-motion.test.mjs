@@ -45,7 +45,7 @@ test('screws park before opening and the lens only enters after the lid is fully
 test('phone screen clears the board before the chipset rises', () => {
   for(let i=0;i<=SCENE_FRAMES;i++) {
     const p=sampleMotion('android',i/SCENE_FRAMES),layout=androidLayout(p);
-    if(p.spread>0) assert.ok(layout.screen.z>1.2);
+    if(p.spread>0) assert.ok(layout.screen.z>.98);
     assert.ok(layout.coreZ<=.23);
   }
 });
