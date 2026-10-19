@@ -555,6 +555,24 @@ html:has(.scroll-home) { scroll-padding-top: 76px; }
 .scene-webgl { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; touch-action: pan-y; }
 .scene-webgl.is-ready { opacity: 1; }
 .scene-webgl canvas { display: block; width: 100%; height: 100%; }
+.study-overlay { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .2s; overflow: visible; }
+.study-overlay rect, .study-overlay path { fill: none; stroke: #59736c; stroke-width: 1; stroke-dasharray: 4 5; vector-effect: non-scaling-stroke; }
+.scene-webgl[data-study-open="true"] .study-overlay { opacity: .75; }
+.study-card { position: absolute; right: 40px; top: 26%; width: 230px; padding: 12px; border: 1px solid rgb(120 137 129 / 22%); border-radius: 15px; background: rgb(255 255 255 / 93%); box-shadow: 0 12px 40px rgb(40 53 47 / 9%); backdrop-filter: blur(14px); z-index: 3; }
+.study-card[hidden] { display: none; }
+.study-card a { display: flex; align-items: center; gap: 10px; }
+.study-card img { width: 44px; height: 44px; object-fit: cover; border-radius: 9px; background: #f1f5f2; flex-shrink: 0; }
+.study-card strong { display: block; color: #263a33; font-size: 12px; line-height: 1.5; }
+.study-card small { display: block; color: #77877e; font-size: 10px; line-height: 1.6; margin-top: 3px; }
+.study-card a > span:last-child { color: #768b81; font-size: 14px; }
+.study-toggle { position: absolute; right: 32px; bottom: 34px; z-index: 2; border: 1px solid rgb(118 136 126 / 20%); border-radius: 30px; padding: 9px 14px; background: rgb(255 255 255 / 75%); color: #6e7e75; font-size: 11px; }
+.study-toggle span { margin-left: 10px; }
+.study-toggle:focus-visible, .study-card a:focus-visible { outline: 2px solid #4c7b67; outline-offset: 4px; }
+@media (max-width: 700px) {
+ .study-toggle { top: 18px; bottom: auto; right: 18px; font-size: 10px; padding: 7px 10px; }
+ .study-card { top: auto; bottom: 100px; right: 18px; left: 18px; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .study-overlay { transition: none; } }
 .interest-art:has(.scene-webgl.is-ready) > img { opacity: 0; }
 .interest-copy, .interest-visit { pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .scene-webgl { transition: none; } }
