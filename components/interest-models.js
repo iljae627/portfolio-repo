@@ -152,9 +152,9 @@ export function buildForensics(){
   const actuator=new T.Group();mechanism.add(actuator);actuator.position.set(1.03,-.58,.335);actuator.userData.study='forensics-logs';
   axialCylinder(actuator,.19,.09,edge,[0,0,-.035]);axialCylinder(actuator,.11,.035,silver,[0,0,.020]);fastener(actuator,[0,0,.04],'z',.044);
   const armShape=new T.Shape();armShape.moveTo(.1,-.08);armShape.lineTo(-.12,-.16);armShape.lineTo(-1.44,.84);armShape.lineTo(-1.40,.95);armShape.lineTo(-.05,.18);armShape.lineTo(.10,.08);armShape.closePath();
-  const armHole=new T.Path();armHole.moveTo(-.28,.18);armHole.lineTo(-1.12,.78);armHole.lineTo(-.30,.36);armHole.closePath();armShape.holes.push(armHole);
+  const armHole=new T.Path();armHole.moveTo(-.28,.11);armHole.lineTo(-1.12,.70);armHole.lineTo(-.34,.29);armHole.closePath();armShape.holes.push(armHole);
   const armGeometry=new T.ExtrudeGeometry(armShape,{depth:.025,bevelEnabled:true,bevelSize:.005,bevelThickness:.004,bevelSegments:3});
-  const headArm=mesh(actuator,armGeometry,silver,[0,0,-.01]);
+  const headArm=mesh(actuator,armGeometry,new T.MeshPhysicalMaterial({color:0xc3cad0,metalness:.7,roughness:.36,clearcoat:.25}),[0,0,-.01]);
   bevel(actuator,.09,.035,.015,dark,[-1.42,.91,-.025],.007);
   rod(actuator,[-1.18,.72,.019],[-1.42,.91,.019],.006,metal(0xe6c78e));
   for(let i=0;i<12;i++){const coil=mesh(actuator,new T.TorusGeometry(.17+i*.003,.0022,4,64),metal(0xb77435),[.29,-.18,.006]);coil.scale.set(1.15,.75,1);}
