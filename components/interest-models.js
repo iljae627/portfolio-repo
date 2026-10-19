@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {brushedMetal,phoneDisplay} from './studio-surfaces.js';
-import {forensicLayout,androidLayout,segment} from '../lib/scene-motion.mjs';
+import {forensicLayout,androidLayout} from '../lib/scene-motion.mjs';
 
 const metal = brushedMetal;
 const ceramic = color => new T.MeshPhysicalMaterial({color, roughness: .36, metalness: .04, clearcoat: .35});
@@ -138,25 +138,18 @@ export function buildAndroid() {
   const core=chip(circuit,.76,.66,.13,0,.5);
   circuit.userData.study='android-runtime';
   panel(circuit,.78,1.35,.11,ceramic(0x35494d),[0,-.58,.09],.06);
-  const layers=[];
   const screen=new T.Group();phone.add(screen);
   screen.userData.study='android-static';
   panel(screen,1.7,3.34,.07,graphite,[0,0,0],.2);
   const display=mesh(screen,new T.PlaneGeometry(1.55,3.15),new T.MeshBasicMaterial({map:phoneDisplay(),color:0xffffff,transparent:true,alphaTest:.02}),[0,0,.055]);
   display.castShadow=false;display.receiveShadow=false;
   mesh(screen,new T.CircleGeometry(.036,24),graphite,[0,1.39,.058]);
-  for(let i=0;i<3;i++) layers.push(panel(phone,1.48,2.96,.006,glass(i===1?0xbcdcd0:0xe7f9ee),[0,0,.315+i*.012],.16));
   const robot=androidRobot(root);robot.root.position.set(1.25,0,.35);robot.root.rotation.y=-.15;
-  return {root,hotspots:{'android-track':robot.root,'android-static':screen,'android-runtime':core},parts:{screen,layers,core,circuit,display},update(p,compact){
+  return {root,hotspots:{'android-track':robot.root,'android-static':screen,'android-runtime':core},parts:{screen,core,circuit,display},update(p,compact){
     const layout=androidLayout(p);
     root.rotation.y=.05+p.turn;
     screen.position.set(layout.screen.x,0,layout.screen.z);
     screen.rotation.y=-p.open*.12;
-    layers.forEach((layer,i)=>{
-      layer.position.set(layout.layers[i].x,layout.layers[i].y,layout.layers[i].z);layer.rotation.y=p.lift*(.18+i*.08);
-      // Reveal the film only after it has cleared the chipset in screen space.
-      layer.visible=p.lift>.9;layer.castShadow=false;layer.material.opacity=.32*segment(p.lift,.9,1);
-    });
     core.position.z=layout.coreZ;
     robot.head.rotation.z=-p.scan*.14;
     robot.head.position.y=1.28+p.scan*.15;
@@ -205,6 +198,70 @@ export function buildReversing() {
   }};
 }
 
+// A physical chain with a removable lid and independently unfolding storage slots.
+export function buildWeb3() {
+  const root=new T.Group(), silver=metal(0xcbd5e0), blue=ceramic(0x367de3);
+  root.userData.study='web3-contract';
+  const blocks=[];
+  for(const x of [-2.35,0,2.35]) {
+    const block=new T.Group();root.add(block);block.position.set(x,.95,0);blocks.push(block);
+    panel(block,1.65,1.45,1.3,glass(0xb5d5fa),[0,0,0],.13).castShadow=false;
+    for(const z of [-.68,.68]) {
+      rod(block,[-.76,-.66,z],[.76,-.66,z],.035,silver);
+      rod(block,[-.76,.66,z],[.76,.66,z],.035,silver);
+      for(const xx of [-.76,.76])rod(block,[xx,-.66,z],[xx,.66,z],.035,silver);
+    }
+    if(x!==0)for(let i=0;i<3;i++)panel(block,.95,.12,.9,blue,[0,-.35+i*.32,0],.04);
+    block.userData.study=x===0?'web3-contract':'web3-storage';
+  }
+  for(const x of [-1.18,1.18])for(const z of [-.3,.3])rod(root,[x-.4,.95,z],[x+.4,.95,z],.055,silver);
+  const lid=panel(root,1.7,.10,1.4,silver,[0,1.76,0],.045);
+  const contract=new T.Group();root.add(contract);contract.position.set(0,1.10,.05);
+  panel(contract,1.13,.84,.08,metal(0xe2e8ef),[0,0,0],.08);
+  for(let i=0;i<5;i++)panel(contract,.71-(i%2)*.18,.025,.012,blue,[-.06,.24-i*.11,.052],.01);
+  contract.userData.study='web3-contract';
+  const slots=[];
+  for(let i=0;i<6;i++)slots.push(panel(root,.34,.25,.34,ceramic(i%2?0x70aaf5:0xe1ebf7),[-.48+(i%3)*.48,.50,Math.floor(i/3)*.48-.24],.045));
+  const slotGroup=new T.Group();root.add(slotGroup);slots.forEach(slot=>slotGroup.attach(slot));slotGroup.userData.study='web3-storage';
+  return {root,hotspots:{'web3-contract':contract,'web3-storage':slotGroup},parts:{lid,contract,slots},update(p){
+    root.rotation.y=-.25+p.turn;
+    lid.position.y=1.76+p.open*1.65;lid.rotation.z=p.spread*.12;
+    contract.position.y=1.10+p.lift*1.05;contract.rotation.y=-p.spread*.2;
+    slots.forEach((slot,i)=>{slot.position.set(-.48+(i%3)*.48+(i%3-1)*p.spread*.17,.50+p.lift*.65+Math.floor(i/3)*p.spread*.3,Math.floor(i/3)*.48-.24+p.spread*.55);});
+  }};
+}
+
+export function buildFuzzing() {
+  const root=new T.Group(), silver=metal(0xcbd3de), blue=ceramic(0x357be0);
+  root.userData.study='fuzzing-mutation';
+  const chamber=new T.Group();root.add(chamber);chamber.position.y=1.05;
+  panel(chamber,3.05,1.45,1.3,glass(0xc5e2f9),[0,0,0],.16).castShadow=false;
+  panel(chamber,3.15,.14,1.45,silver,[0,-.75,0],.05);
+  for(const z of [-.70,.70])rod(chamber,[-1.5,.7,z],[1.5,.7,z],.04,silver);
+  const caps=[-1,1].map(side=>panel(root,.20,1.65,1.5,silver,[side*1.65,1.05,0],.08));
+  const input=new T.Group();root.add(input);input.userData.study='fuzzing-input';
+  panel(input,.75,1.05,.08,metal(0xf0f3f7),[0,0,0],.06);
+  for(let i=0;i<5;i++)panel(input,.48,.035,.012,blue,[0,.30-i*.14,.055],.01);
+  const tokens=[];
+  for(let i=0;i<24;i++)tokens.push(panel(chamber,.24,.24,.24,ceramic(i%3?0x78afea:0xe9f0fa),[-1.12+(i%6)*.44,-.27+Math.floor(i/12)*.5,-.32+Math.floor(i/6)%2*.64],.035));
+  const crash=panel(root,.45,.45,.45,ceramic(0xeeae48),[.9,1.2,0],.065);crash.userData.study='fuzzing-crash';
+  return {root,hotspots:{'fuzzing-mutation':chamber,'fuzzing-input':input,'fuzzing-crash':crash},parts:{caps,chamber,input,crash},update(p){
+    root.rotation.y=-.2+p.turn;
+    caps.forEach((cap,i)=>{cap.position.x=(i?1:-1)*(1.65+p.open*.55);});
+    input.position.set(-3.35+p.lift*.65,1.05+p.open*.25,.85);input.rotation.y=-.2+p.spread*.25;
+    tokens.forEach((token,i)=>{
+      const wave=Math.sin(i*2.1+p.scan*5)*p.spread;
+      token.position.set(-1.12+(i%6)*.44,-.27+Math.floor(i/12)*.5+wave*.11,-.32+Math.floor(i/6)%2*.64);
+      token.rotation.set(p.spread*(i%3)*.3,p.scan*(i%4)*.4,p.spread*wave*.4);
+    });
+    // The candidate rises above the cap before travelling out of the parser.
+    crash.position.set(.9+p.scan*1.8,1.2+p.lift*1.25,.12+p.spread*.3);
+    crash.rotation.set(p.spread*.25,p.scan*.65,p.spread*.2);
+  }};
+}
+
 export function makeModel(kind) {
-  return kind==='android'?buildAndroid():kind==='reversing'?buildReversing():buildForensics();
+  const builders={forensics:buildForensics,android:buildAndroid,reversing:buildReversing,web3:buildWeb3,fuzzing:buildFuzzing};
+  if(!builders[kind])throw new Error(`Unknown interest scene: ${kind}`);
+  return builders[kind]();
 }

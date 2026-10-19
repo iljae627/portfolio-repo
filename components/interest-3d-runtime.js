@@ -14,7 +14,7 @@ export function mountScene(host, kind, control, ready, onStudy = ()=>{}) {
   renderer.shadowMap.type=T.PCFShadowMap;
   const canvas=renderer.domElement;canvas.setAttribute('aria-hidden','true');host.appendChild(canvas);
   const scene=new T.Scene();
-  const color=kind==='android'?0xe4ebe3:kind==='reversing'?0xe1e5ed:0xe8e1d5;
+  const color=kind==='android'?0xe4ebe3:kind==='reversing'?0xe1e5ed:kind==='web3'?0xe3e9f0:kind==='fuzzing'?0xe9e5dc:0xe8e1d5;
   scene.background=new T.Color(color);scene.fog=new T.Fog(color,19,44);
   const room=new RoomEnvironment();
   const pmrem=new T.PMREMGenerator(renderer);
