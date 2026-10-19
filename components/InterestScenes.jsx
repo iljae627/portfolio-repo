@@ -56,7 +56,7 @@ export default function InterestScenes() {
       </nav>
       {scenes.map(scene => <section className={`interest-scene scene-${scene.id}`} id={scene.id} key={scene.id} aria-labelledby={`${scene.id}-title`}>
         <div className="interest-stage">
-          <div className="interest-art"><Image src={scene.image} alt={scene.alt} fill sizes="(max-width: 700px) 165vw, 100vw" /><SceneCanvas kind={scene.id} control={controls.current[scene.id]} /></div>
+          <div className="interest-art"><Image src={scene.image} alt={scene.alt} fill sizes="(max-width: 700px) 165vw, 100vw" loading={scene.id === 'forensics' ? 'eager' : 'lazy'} /><SceneCanvas kind={scene.id} control={controls.current[scene.id]} /></div>
           <div className="interest-copy"><span>{scene.label}</span>{scene.id === 'forensics' ? <h1 id={`${scene.id}-title`}>{scene.title}</h1> : <h2 id={`${scene.id}-title`}>{scene.title}</h2>}</div>
           <Link className="interest-visit" href={scene.href}>기록 보기 <ArrowUpRight size={15} /></Link>
         </div>
