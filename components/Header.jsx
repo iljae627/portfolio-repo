@@ -1,14 +1,22 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import HeroPokemon from './HeroPokemon';
 export default function Header() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const [atTop, setAtTop] = useState(true);
+  const home = path === "/";
+  useEffect(() => {
+    function update() { const top = window.scrollY <= 12; setAtTop(top); if (!top) setOpen(false); }
+    update(); window.addEventListener("scroll", update, {passive:true});
+    return () => window.removeEventListener("scroll", update);
+  }, [path]);
+  const hidden = home && !atTop;
   return (
-    <header className="header">
+    <header className={`header${home ? " home-header" : ""}${hidden ? " is-away" : ""}`} inert={hidden} aria-hidden={hidden || undefined}>
       <div className="shell nav">
         <div className="nav-brand"><Link href="/" className="wordmark" onClick={() => setOpen(false)}>
           정일재<span>.</span>

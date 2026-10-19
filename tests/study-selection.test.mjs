@@ -16,6 +16,12 @@ test('leaving a part does not retain a stale card; another part can open',()=>{
  assert.equal(selectStudy({selected:'disk'}),'');
  assert.equal(selectStudy({selected:'disk',hovered:'memory'}),'memory');
 });
+
+test('VM connector crossing the debugger keeps the original card until leaving the corridor',()=>{
+ assert.equal(selectStudy({selected:'vm',hovered:'debugger',near:true,onConnector:true}),'vm');
+ assert.equal(selectStudy({selected:'vm',hovered:'debugger',near:false,onConnector:false}),'debugger');
+ assert.equal(selectStudy({selected:'vm',near:false,onConnector:false}),'');
+});
 test('keyboard focus and explicit touch toggle keep links usable; close always wins',()=>{
  assert.equal(selectStudy({selected:'disk',pinned:true}),'disk');
  assert.equal(selectStudy({manual:true},'memory'),'memory');
