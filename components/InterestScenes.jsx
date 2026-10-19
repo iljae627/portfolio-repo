@@ -9,6 +9,8 @@ const scenes = [
   {id: "forensics", label: "DIGITAL FORENSICS", title: "흔적을 잇다.", image: "/images/interests/forensics.png", alt: "저장장치와 확대 렌즈로 디지털 포렌식을 표현한 컨셉 이미지", href: "/work/digital-forensics"},
   {id: "android", label: "ANDROID SECURITY", title: "앱의 경계를 보다.", image: "/images/interests/android.png", alt: "스마트폰과 안드로이드 로봇으로 모바일 보안을 표현한 컨셉 이미지", href: "/work/android-security"},
   {id: "reversing", label: "REVERSE ENGINEERING", title: "안쪽의 원리를 읽다.", image: "/images/interests/reversing.png", alt: "층으로 분리된 프로세서와 회로로 리버스 엔지니어링을 표현한 컨셉 이미지", href: "/projects"},
+  {id: "web3", label: "WEB3 SECURITY", title: "신뢰의 구조를 읽다.", image: "/images/interests/web3.svg", alt: "연결된 블록에서 스마트 계약과 저장 공간이 펼쳐지는 3D 장면", href: "https://iljae627.github.io/posts/ethernaut-all-clear/"},
+  {id: "fuzzing", label: "FUZZING", title: "예외를 찾아내다.", image: "/images/interests/fuzzing.svg", alt: "입력이 변형되고 오류 후보가 분리되는 퍼징 분석 장치", href: "https://iljae627.github.io/posts/fuzzing101-three-exercises/"},
 ];
 const clamp = value => Math.min(1, Math.max(0, value));
 

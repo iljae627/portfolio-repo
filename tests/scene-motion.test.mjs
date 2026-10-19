@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {sampleMotion, SCENE_FRAMES,forensicLayout,androidLayout} from '../lib/scene-motion.mjs';
 
 test('scroll poses reconstruct identically when scrubbing backwards or holding', () => {
-  for (const kind of ['forensics', 'android', 'reversing']) {
+  for (const kind of ['forensics', 'android', 'reversing', 'web3', 'fuzzing']) {
     const forward = Array.from({length: SCENE_FRAMES + 1}, (_, i) => sampleMotion(kind, i / SCENE_FRAMES));
     for (let i = SCENE_FRAMES; i >= 0; i--) {
       assert.deepEqual(sampleMotion(kind, i / SCENE_FRAMES), forward[i]);
@@ -42,11 +42,10 @@ test('screws park before opening and the lens only enters after the lid is fully
   }
 });
 
-test('phone layers move to their own lane before the chipset lifts', () => {
+test('phone screen clears the board before the chipset rises', () => {
   for(let i=0;i<=SCENE_FRAMES;i++) {
     const p=sampleMotion('android',i/SCENE_FRAMES),layout=androidLayout(p);
-    assert.ok(layout.layers[0].z>.30);
-    if(p.spread>0) assert.ok(layout.layers.every(layer=>layer.x>=2.75));
+    if(p.spread>0) assert.ok(layout.screen.z>1.2);
     assert.ok(layout.coreZ<=.23);
   }
 });
