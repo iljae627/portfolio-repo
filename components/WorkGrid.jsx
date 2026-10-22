@@ -31,7 +31,6 @@ export default function WorkGrid({ projects }) {
             </button>
           ))}
         </div>
-        <span className="mono muted">SELECTED / 2026</span>
       </div>
       <div className="project-grid" aria-live="polite">
         {visible.map((p) => (

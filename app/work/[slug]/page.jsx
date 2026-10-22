@@ -17,7 +17,7 @@ export default async function Project({ params }) {
   if (!p) notFound();
   return (
     <main id="main" className="shell detail section">
-      <Link href="/#work" className="text-link">
+      <Link href="/projects" className="text-link">
         <ArrowLeft size={16} /> 모든 프로젝트
       </Link>
       <div className="detail-hero">
@@ -44,7 +44,7 @@ export default async function Project({ params }) {
       </div>
       <div className="detail-body">
         <aside>
-          <span className="mono muted">ROLE & CONTEXT</span>
+          <span className="mono muted">담당 역할</span>
           <p>{p.role}</p>
           <a
             className="button dark"
@@ -56,13 +56,19 @@ export default async function Project({ params }) {
           </a>
         </aside>
         <div>
+          {p.inspiration && <section>
+            <span className="eyebrow">시작한 계기</span><h2>호기심이 시작된 글</h2>
+            <p>{p.inspiration.text}</p>
+            <a className="related-link" href={p.inspiration.url} target="_blank" rel="noreferrer">{p.inspiration.title} <ArrowUpRight size={15} /></a>
+            <p className="image-credit">위 통신 흐름도는 제공해 주신 참고 이미지이며, manatails의 원문 분석을 소개하는 자료입니다.</p>
+          </section>}
           <section>
-            <span className="eyebrow">01 / QUESTION</span>
+            <span className="eyebrow">문제</span>
             <h2>어떤 문제였나요?</h2>
             <p>{p.problem}</p>
           </section>
           <section>
-            <span className="eyebrow">02 / PROCESS</span>
+            <span className="eyebrow">분석 과정</span>
             <h2>어떻게 접근했나요?</h2>
             <ol>
               {p.approach.map((a) => (
@@ -71,7 +77,7 @@ export default async function Project({ params }) {
             </ol>
           </section>
           <section>
-            <span className="eyebrow">03 / OUTCOME</span>
+            <span className="eyebrow">결과와 기록</span>
             <h2>무엇을 남겼나요?</h2>
             <p>{p.result}</p>
             <p className="evidence-note">{p.caveat}</p>

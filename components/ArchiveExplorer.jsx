@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, ArrowUpRight, ArrowLeft, ArrowRight } from "lucide-react";
+import ArchiveThumbnail from "./ArchiveThumbnail";
 export default function ArchiveExplorer({ items }) {
   const params = useSearchParams();
   const [source, setSource] = useState(params.get("source") || "전체");
@@ -88,30 +89,16 @@ export default function ArchiveExplorer({ items }) {
       </div>
       <div className="archive-list">
         {filtered.slice((current - 1) * 12, current * 12).map((x) => (
-          <a href={x.url} key={x.id} target="_blank" rel="noreferrer">
-            <div className="archive-item-meta">
-              <span
-                className={`source-badge ${x.source === "GitHub" ? "github" : ""}`}
-              >
-                {x.source}
-              </span>
-              <time className="mono muted">{x.date}</time>
-            </div>
+          <article className="archive-entry" key={x.id}>
+          <ArchiveThumbnail item={x} />
+          <a className="archive-link" href={x.url} target="_blank" rel="noreferrer">
             <div className="archive-item-content">
-              <span className="mono muted">
-                {x.category}
-                {x.fork ? " / FORK" : ""}
-              </span>
               <h2>{x.title}</h2>
-              <p>{x.summary}</p>
-              <div className="tags">
-                {x.tags.slice(0, 4).map((t) => (
-                  <span key={t}>{t}</span>
-                ))}
-              </div>
+              <div className="archive-item-meta"><span>{x.source}</span><span aria-hidden="true">·</span><time dateTime={x.date}>{x.date}</time>{x.fork && <span>Fork</span>}</div>
             </div>
             <ArrowUpRight size={19} />
           </a>
+          </article>
         ))}
       </div>
       {!filtered.length && (
