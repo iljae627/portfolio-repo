@@ -29,7 +29,7 @@ const captions = {
   trading: ['Dip', '관찰 · 검증 · 주문 추적'],
   studio: ['World Builder', '맵에서 시작하는 나만의 세계'],
   rng: ['Seed → Frame', '조건을 읽고 결과를 비교하다'],
-  collector: ['Collector', 'Sigstore · Rekor · npm'],
+  collector: ['TrustGate', 'npm · GitHub · Sigstore / Rekor'],
 };
 export default function ProjectVisual({ project }) {
   if (project.visual === "protocol") return (
