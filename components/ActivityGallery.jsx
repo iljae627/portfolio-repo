@@ -3,8 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import { media } from "@/lib/media";
 export default function ActivityGallery() {
   return <div className="activity-gallery" aria-label="블로그에서 가져온 활동 이미지">
-    {[['debugger', '직접 만들고, 원리를 확인합니다.', 'Python 디버거 구현 기록'],
-      ['nextrise', '화면 밖에서도 배움을 찾습니다.', 'NextRise 2026 현장 기록']].map(([key, title, label]) => {
+    {[['debugger', 'Python 디버거 개발', 'Python 디버거 구현 기록'],
+      ['nextrise', 'NextRise 2026 방문', 'NextRise 2026 현장 기록']].map(([key, title, label]) => {
       const item = media[key];
       return <a className={`gallery-card gallery-${key}`} href={item.page} key={key} target="_blank" rel="noreferrer">
         <div className="gallery-image">
