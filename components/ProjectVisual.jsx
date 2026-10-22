@@ -6,6 +6,7 @@ import {
   Fingerprint,
   Code2,
   Smartphone,
+  TrendingUp, Gamepad2, Dices, PackageSearch,
 } from "lucide-react";
 import Image from "next/image";
 import { media } from "@/lib/media";
@@ -16,6 +17,7 @@ const icons = {
   forensics: Fingerprint,
   web: Code2,
   android: Smartphone,
+  trading: TrendingUp, studio: Gamepad2, rng: Dices, collector: PackageSearch,
 };
 const captions = {
   response: ["17위", "CCE 2026 본선 · 팀 성과"],
@@ -24,6 +26,10 @@ const captions = {
   android: ["14 / 14", "HexTree Android Track 완료"],
   forensics: ["Follow the trace.", "기록 속 단서를 연결하는 분석"],
   web: ["InfoSec Hub", "배운 지식을 하나의 서비스로"],
+  trading: ['Dip', '관찰 · 검증 · 주문 추적'],
+  studio: ['World Builder', '맵에서 시작하는 나만의 세계'],
+  rng: ['Seed → Frame', '조건을 읽고 결과를 비교하다'],
+  collector: ['Collector', 'Sigstore · Rekor · npm'],
 };
 export default function ProjectVisual({ project }) {
   if (project.visual === "protocol") return (

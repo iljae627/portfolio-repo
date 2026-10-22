@@ -168,3 +168,35 @@ Vercel Production에 충분히 긴 난수 `CRON_SECRET`을 Secret 타입으로 �
 - `public/images/logos/naver-blog.png`: [네이버 블로그 공식 이미지](https://ssl.pstatic.net/static/blog/icon/og_270x270.png), 원본 파일 그대로 사용.
 - `public/images/logos/github.svg`: [GitHub Brand Toolkit](https://brand.github.com/foundations/logo)의 공식 [로고 묶음](https://brand.github.com/GitHub_Logos.zip) 중 `GitHub_Invertocat_Black_Clearspace.svg`, 원본 파일 그대로 사용. 로고는 각 제공자의 상표입니다.
 - `public/images/logos/journal.svg`: 이 사이트에서 만든 일반 문서 아이콘.
+
+
+## 랜덤 포켓몬 홈 이미지
+
+- `public/images/pokemon/1.png`부터 `1025.png`까지 전국도감 1~1025번 기본 형태의 원본 이미지를 보관합니다. 2026-10-19에 PokéAPI 종 목록과 official-artwork 폴더의 전체 대응을 확인했으며 누락은 없습니다. 색이 다른 개체와 메가·리전 폼은 별도 항목으로 넣지 않습니다.
+- 이미지 출처: [PokéAPI sprites](https://github.com/PokeAPI/sprites), `sprites/pokemon/other/official-artwork`. 각 PNG의 서명과 upstream Git blob SHA-1을 확인했습니다. 포켓몬 명칭과 아트워크의 권리는 각 권리자에게 있습니다.
+- 전체 목록은 `data/pokemon.json`, 동작은 `components/HeroPokemon.jsx`에 있습니다. 홈 진입 시 랜덤 선택하며 보이는 탭에서 10초마다 교체합니다. 클릭·Enter·Space로 즉시 바꿀 수 있습니다. 연속으로 같은 번호를 선택하지 않습니다.
+- 이미지 요청은 이 사이트의 파일만 사용하며 Next.js Image가 화면 크기에 맞춰 최적화합니다. 원본 1,025개를 브라우저에 한꺼번에 내려보내지 않습니다. 실패 시 기존 캐릭터로 대체합니다.
+- 부드러운 이미지 표시와 기존 떠오름 애니메이션을 유지하며, reduced-motion 설정에서는 모션을 생략합니다. 소개의 이력 제목은 `AWARD`로 표시합니다.
+
+
+## 관심 분야 스크롤 장면
+
+홈의 첫 화면 아래에 디지털 포렌식·Android 보안·리버스 엔지니어링을 이미지 중심의 세 장면으로 구성했습니다. `components/InterestScenes.jsx`에서 이미지와 프로젝트 링크를 관리합니다.
+
+- 브라우저의 일반 스크롤과 sticky 영역을 사용합니다. 휠 입력을 가로채거나 스크롤을 강제 이동하지 않습니다.
+- Three.js로 만든 실제 3D 장면을 스크롤 위치에 연결합니다. 저장장치 덮개·나사·회로, 스마트폰 화면·투명 층·로봇, 칩 덮개·다이·내부 타일이 순서대로 펼쳐집니다. 앞으로·뒤로 스크롤하면 같은 자세를 복원하고 멈추면 정지합니다.
+- 240단계 자세와 부드러운 보간을 사용하며, 마우스 위치에 따른 기울기와 가리킨 부품의 작은 확대를 적용합니다. 제목은 물체가 펼쳐질 때 사라집니다.
+- 장면이 가까워질 때 3D 코드를 불러옵니다. 화면 밖이나 숨겨진 탭에서는 렌더링하지 않으며, 자세가 바뀌지 않을 때에도 GPU 재렌더링을 생략합니다.
+- 모바일은 카메라와 부품 간격을 조정하고 일반 터치 스크롤을 유지합니다. prefers-reduced-motion에서는 sticky 연출을 제거하고 조립된 정적인 장면을 제공합니다.
+- 관심 분야 장면을 보는 동안 화면 밖의 포켓몬 자동 교체는 멈춥니다.
+- WebGL을 사용할 수 없을 때 표시하는 배경 이미지 세 장은 image_gen으로 만든 컨셉 비주얼입니다. 3D 모델 역시 관심 분야를 표현하는 시각 자료이며 실제 실습 증거가 아닙니다. [이미지 제작 기록](docs/interest-images.md), [3D 모션 구성](docs/scroll-motion.md)을 참고하세요. 실제 분석 기록은 각 장면의 프로젝트 링크에서 확인할 수 있습니다.
+
+## 현재 홈·프로젝트·아카이브 구성
+
+2026-10-19 후속 개편으로 소개용 첫 화면을 제거했습니다. `/`에 진입하면 3D 포렌식 장면이 바로 표시되고, 랜덤 포켓몬은 공통 상단 메뉴에서 34~40px 크기로 표시됩니다. 기존 무작위 선택·10초 교체·클릭/키보드 변경 동작을 유지합니다.
+
+`lib/ongoing-projects.js`의 여섯 항목만 `/projects`에 표시합니다: 디지털 포렌식 공부, Android 보안 공부, DS/3DS 사설 배포 서버, 토스 API 주식 자동매매, 포켓몬 팬게임 제작 툴, 2·3·4세대 RNG-Maker 활용 공부. 상세는 목표·진행 과정·현재 상태·다음 단계로 구성합니다.
+
+CCE, DEF CON, InfoSec Hub와 Collector는 `completedProjects`로 분리하되 기존 상세 주소는 유지합니다. 상세의 복귀 링크는 아카이브를 가리킵니다. 아카이브에서는 현재 진행하는 DS/3DS 저장소 항목을 표시하지 않지만 수집 원본과 동기화는 유지합니다. 완료된 개별 학습 글·대회 회고는 계속 표시합니다.
+
+Collector의 개인 역할은 Sigstore·Rekor 수집기 개발이며 이후는 팀 공동 작업입니다. 아카이브 등록일 2026-10-19와 활동 시기인 여름방학을 구분했습니다. [내용 출처와 분류 기준](docs/project-editorial.md)을 참고하세요.

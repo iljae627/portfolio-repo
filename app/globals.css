@@ -423,6 +423,9 @@ svg { flex-shrink: 0; }
 .minimal-name { color: #8b95a1; font-size: 13px; letter-spacing: -.02em; }
 .character-float { width: 190px; height: 190px; margin: 7px auto 0; animation: character-breathe 5s ease-in-out infinite; will-change: transform; }
 .character-float img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pokemon-switch { display: block; padding: 8px; border: 0; border-radius: 24px; background: transparent; }
+.pokemon-image { opacity: 0; transition: opacity .4s ease; }
+.pokemon-image.ready { opacity: 1; }
 .minimal-intro h1 { font-size: clamp(37px, 4.5vw, 62px); line-height: 1.22; letter-spacing: -.06em; font-weight: 750; }
 .minimal-intro h1 span { color: #2463eb; }
 .minimal-description { color: #8b95a1; font-size: 16px; margin-top: 22px; }
@@ -500,3 +503,81 @@ svg { flex-shrink: 0; }
  .footer { padding-block: 19px; } .footer > div { font-size: 9px; gap: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { .character-float { animation: none; will-change: auto; } .thumbnail-inner { transition: none; } }
+
+/* Image-led interest scenes: each frame follows the natural page scroll. */
+html:has(.scroll-home) { scroll-padding-top: 76px; }
+.scroll-home .minimal-home { min-height: calc(100svh - 76px); position: relative; padding-bottom: 80px; }
+.interest-scroll-cue { display: inline-flex; align-items: center; justify-content: center; color: #9ca7b4; margin-top: 28px; padding: 8px; }
+.interest-scroll-cue:hover { color: #2463eb; }
+.interest-scenes { position: relative; isolation: isolate; }
+.interest-scene { position: relative; height: 360svh; --scene-reveal: 1; --scene-progress: 0; scroll-margin-top: 0; }
+.interest-stage { position: sticky; top: 76px; height: calc(100svh - 76px); min-height: 500px; overflow: hidden; background: var(--scene-color); clip-path: inset(0 calc((1 - var(--scene-reveal)) * 2%) round calc((1 - var(--scene-reveal)) * 28px)); }
+.scene-forensics { --scene-color: #f1ede5; }
+.scene-android { --scene-color: #edf6ef; }
+.scene-reversing { --scene-color: #edf0fa; }
+.interest-art { position: absolute; inset: 0; transform: translate3d(0, calc(var(--scene-progress) * -2%), 0) scale(calc(1.02 + var(--scene-progress) * .07)); will-change: transform; }
+.interest-art img { object-fit: cover; object-position: 50% 57%; }
+.interest-copy { position: absolute; left: 24px; right: 24px; top: clamp(44px, 9svh, 100px); text-align: center; z-index: 1; opacity: var(--scene-reveal); transform: translate3d(0, calc((1 - var(--scene-reveal)) * 35px - var(--scene-progress) * 18px), 0); }
+.interest-copy > span { display: block; color: #5c656f; font-size: 10px; letter-spacing: .15em; font-weight: 600; margin-bottom: 12px; }
+.interest-copy h2 { font-size: clamp(37px, 4.3vw, 66px); font-weight: 750; line-height: 1.25; color: #191f28; text-wrap: balance; }
+.interest-visit { position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 30px; background: rgb(255 255 255 / 80%); backdrop-filter: blur(12px); color: #354154; font-size: 12px; font-weight: 600; z-index: 2; white-space: nowrap; }
+.interest-visit:hover { background: #fff; color: #2463eb; }
+.interest-progress { position: fixed; left: 24px; top: 50%; transform: translateY(-50%); z-index: 15; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.interest-progress.is-visible { opacity: 1; pointer-events: auto; }
+.interest-progress a { width: 25px; height: 25px; display: flex; align-items: center; justify-content: flex-start; }
+.interest-progress span { display: block; width: 11px; height: 2px; background: #9ca3aa; transition: width .2s, background .2s; }
+.interest-progress a[aria-current] span { width: 20px; background: #252d39; }
+@media (max-width: 700px) {
+ html:has(.scroll-home) { scroll-padding-top: 66px; }
+ .scroll-home .minimal-home { min-height: calc(100svh - 66px); padding-bottom: 55px; }
+ .interest-scroll-cue { margin-top: 18px; }
+ .interest-scene { height: 310svh; scroll-margin-top: 0; }
+ .interest-stage { top: 66px; height: calc(100svh - 66px); min-height: 500px; }
+ .interest-art { inset: 0; }
+ .interest-art img { object-fit: cover; object-position: 58% 50%; }
+ .scene-reversing .interest-art img { object-position: 50% 50%; }
+ .interest-copy { top: 62px; left: 22px; right: 22px; }
+ .interest-copy h2 { font-size: clamp(32px, 8vw, 42px); }
+ .interest-copy > span { font-size: 9px; letter-spacing: .1em; }
+ .interest-visit { bottom: 35px; font-size: 11px; }
+ .interest-progress { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .interest-scene { height: auto; }
+ .interest-stage { position: relative; top: auto; clip-path: none; }
+ .interest-art, .interest-copy { transform: none; will-change: auto; }
+ .interest-copy { opacity: 1; }
+ .interest-progress { display: none; }
+}
+
+/* Geometry, rather than a camera pan over a flat image, owns the motion. */
+.interest-art { transform: none; will-change: auto; }
+.scene-webgl { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease; touch-action: pan-y; }
+.scene-webgl.is-ready { opacity: 1; }
+.scene-webgl canvas { display: block; width: 100%; height: 100%; }
+.interest-art:has(.scene-webgl.is-ready) > img { opacity: 0; }
+.interest-copy, .interest-visit { pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .scene-webgl { transition: none; } }
+
+.interest-copy { opacity: calc(var(--scene-reveal) * (1 - clamp(0, (var(--scene-progress) - .08) * 4.5, 1))); }
+.interest-stage::after { content: ""; position: absolute; inset: auto 0 0; height: 2px; background: rgb(53 91 138 / 35%); transform: scaleX(var(--scene-progress)); transform-origin: left; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .interest-copy { opacity: 1; } .interest-stage::after { display: none; } }
+
+/* The scene is the opening screen; the mascot lives quietly in the navigation. */
+.nav-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.header-pokemon.pokemon-switch { width: 40px; height: 40px; flex-shrink: 0; margin: 0; padding: 2px; border-radius: 12px; }
+.header-pokemon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.header-pokemon:hover { background: #f4f6f9; }
+.header-pokemon:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.interest-copy h1 { font-size: clamp(37px, 4.3vw, 66px); font-weight: 750; line-height: 1.25; color: #191f28; text-wrap: balance; }
+.collection-description { color: #7c8794; font-size: 15px; line-height: 1.8; margin-top: 14px; }
+.project-visual.trading { color: #326e60; background: #eaf5ef; }
+.project-visual.studio { color: #6d66a1; background: #f0eef9; }
+.project-visual.rng { color: #8b6b3e; background: #faf3e5; }
+.project-visual.collector { color: #486b94; background: #edf3fa; }
+@media (max-width: 700px) {
+ .nav-brand { gap: 6px; }
+ .header-pokemon.pokemon-switch { width: 34px; height: 34px; }
+ .interest-copy h1 { font-size: clamp(32px, 8vw, 42px); }
+ .collection-description { font-size: 13px; }
+}

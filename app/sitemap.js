@@ -1,4 +1,4 @@
-import { projects } from "@/lib/projects";
+import { allProjects } from "@/lib/projects";
 export default function sitemap() {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return [
@@ -7,7 +7,7 @@ export default function sitemap() {
     "/archive",
     "/about",
     "/sources",
-    ...projects.map((p) => `/work/${p.slug}`),
+    ...allProjects.map((p) => `/work/${p.slug}`),
   ].map((path) => ({
     url: `${base}${path}`,
     changeFrequency: "monthly",
