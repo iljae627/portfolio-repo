@@ -32,6 +32,14 @@ const captions = {
   collector: ['TrustGate', 'npm · GitHub · Sigstore / Rekor'],
 };
 export default function ProjectVisual({ project }) {
+  if (project.visual === "securecommerce") return (
+    <div className="project-visual with-image" data-project="securecommerce">
+      <div className="project-image">
+        <Image src="/images/portfolio/securecommerce.webp" alt="SecureCommerce의 데스크 컬렉션과 추천 상품이 보이는 홈 화면" fill sizes="(max-width: 720px) calc(100vw - 32px), 540px" />
+      </div>
+      <div className="project-image-caption"><span>공개 배포 화면</span><strong>SecureCommerce</strong></div>
+    </div>
+  );
   if (project.visual === "protocol") return (
     <div className="project-visual with-image protocol">
       <div className="project-image protocol-image"><Image src="/images/portfolio/mystery-gift-flow.png" alt="3DS와 DNS·인증·이상한소포 배포 서버 사이 통신 흐름도" fill sizes="(max-width: 700px) calc(100vw - 40px), 540px" /></div>

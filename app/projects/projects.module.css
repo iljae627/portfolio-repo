@@ -1,0 +1,20 @@
+.title {
+  margin: 0 0 12px;
+  font-size: clamp(22px, 3vw, 30px);
+}
+
+.feature {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 17px 20px;
+  margin-bottom: 36px;
+  border: 1px solid #cfdfe5;
+  border-radius: 12px;
+  background: #f2f7f9;
+}
+
+.feature:hover { background: #e9f2f6; }
+.feature strong { color: #173f54; font-size: 21px; }
+.feature p { color: #40556b; font-size: 14px; }

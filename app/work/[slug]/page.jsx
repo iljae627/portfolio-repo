@@ -1,102 +1,108 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { projects, allProjects } from "@/lib/projects";
+import { projects, allProjects, secureCommerce } from "@/lib/projects";
 import ProjectVisual from "@/components/ProjectVisual";
+import styles from "./project-detail.module.css";
+
 export function generateStaticParams() {
-  return allProjects.map((p) => ({ slug: p.slug }));
+  return allProjects.map(({ slug }) => ({ slug }));
 }
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const p = allProjects.find((p) => p.slug === slug);
-  return { title: p?.name || "프로젝트", description: p?.short };
+  const project = allProjects.find((item) => item.slug === slug);
+  return { title: project?.name || "프로젝트", description: project?.short };
 }
+
+function getSources(project) {
+  if (project.links) return project.links;
+  const related = (project.related ?? []).map((url, index) => ({
+    url, title: "연관 분석 기록 " + (index + 1),
+  }));
+  return [
+    ...(project.source ? [{ url: project.source, title: "프로젝트 원문" }] : []),
+    ...related,
+  ];
+}
+
 export default async function Project({ params }) {
   const { slug } = await params;
-  const p = allProjects.find((x) => x.slug === slug);
-  if (!p) notFound();
-  const ongoing = projects.some(x => x.slug === slug);
+  const project = allProjects.find((item) => item.slug === slug);
+  if (!project) notFound();
+
+  const ongoing = projects.some((item) => item.slug === slug);
+  const inProjects = ongoing || slug === secureCommerce.slug;
+  const collection = inProjects ? { href: "/projects", title: "프로젝트" } : { href: "/archive", title: "활동 아카이브" };
+  const sources = getSources(project);
+  const contents = [
+    ["overview", "프로젝트 개요"],
+    ...(project.inspiration ? [["background", "시작한 계기"]] : []),
+    ["approach", "접근과 작업 과정"],
+    ["outcome", ongoing ? "현재까지의 기록" : "결과와 검증"],
+    ...(project.next?.length ? [["next", "다음 작업"]] : []),
+    ...(sources.length ? [["sources", "관련 자료"]] : []),
+  ];
+
   return (
-    <main id="main" className="shell detail section">
-      <Link href={ongoing ? '/projects' : '/archive'} className="text-link">
-        <ArrowLeft size={16} /> {ongoing ? '모든 프로젝트' : '활동 아카이브'}
-      </Link>
-      <div className="detail-hero">
-        <div>
-          <span className="eyebrow">
-            {p.category} / {ongoing ? p.status : p.date}
-          </span>
-          <h1>
-            {p.title.split("\n").map((t, i) => (
-              <span key={i}>
-                {t}
-                <br />
-              </span>
-            ))}
-          </h1>
-          <p className="hero-desc">{p.name}</p>
-          <div className="tags">
-            {p.tags.map((t) => (
-              <span key={t}>{t}</span>
-            ))}
-          </div>
+    <main id="main" className={"shell " + styles.page}>
+      <Link className={styles.back} href={collection.href}><ArrowLeft size={16} aria-hidden="true" />{collection.title}</Link>
+      <header className={styles.hero}>
+        <div className={styles.intro}>
+          <p className={styles.category}>{project.category}</p>
+          <h1>{project.title.replaceAll("\n", " ")}</h1>
+          <p className={styles.summary}>{project.short}</p>
+          <ul className={styles.tags} aria-label="사용 기술">
+            {project.tags.map((tag) => <li key={tag}>{tag}</li>)}
+          </ul>
         </div>
-        <ProjectVisual project={p} />
-      </div>
-      <div className="detail-body">
-        <aside>
-          <span className="mono muted">담당 역할</span>
-          <p>{p.role}</p>
-          {p.source && <a
-            className="button dark"
-            href={p.source}
-            target="_blank"
-            rel="noreferrer"
-          >
-            공개 기록 보기 <ArrowUpRight size={16} />
-          </a>}
-          {p.evidenceLabel && <p className="image-credit">{p.evidenceLabel}</p>}
+        <div className={styles.visual}><ProjectVisual project={project} /></div>
+      </header>
+
+      <div className={styles.layout}>
+        <aside className={styles.sidebar}>
+          <dl className={styles.facts}>
+            <div><dt>담당 역할</dt><dd>{project.role}</dd></div>
+            <div><dt>{ongoing ? "진행 상태" : "활동 기록"}</dt><dd>{ongoing ? project.status : project.date}</dd></div>
+            {project.evidenceLabel && <div><dt>기록 범위</dt><dd>{project.evidenceLabel}</dd></div>}
+          </dl>
+          <nav className={styles.contents} aria-label="상세 페이지 목차">
+            <p>이 페이지에서</p>
+            <ul>{contents.map(([id, title]) => <li key={id}><a href={"#" + id}>{title}</a></li>)}</ul>
+          </nav>
         </aside>
-        <div>
-          {p.inspiration && <section>
-            <span className="eyebrow">시작한 계기</span><h2>호기심이 시작된 글</h2>
-            <p>{p.inspiration.text}</p>
-            <a className="related-link" href={p.inspiration.url} target="_blank" rel="noreferrer">{p.inspiration.title} <ArrowUpRight size={15} /></a>
-            <p className="image-credit">위 통신 흐름도는 제공해 주신 참고 이미지이며, manatails의 원문 분석을 소개하는 자료입니다.</p>
+
+        <article className={styles.article}>
+          <section id="overview">
+            <h2>{contents[0][1]}</h2>
+            <p>{project.problem}</p>
+          </section>
+          {project.inspiration && <section id="background">
+            <h2>시작한 계기</h2>
+            <p>{project.inspiration.text}</p>
+            <a className={styles.inlineLink} href={project.inspiration.url} target="_blank" rel="noreferrer">{project.inspiration.title} <ArrowUpRight size={16} aria-hidden="true" /></a>
           </section>}
-          <section>
-            <span className="eyebrow">{ongoing ? '관심과 목표' : '문제'}</span>
-            <h2>{ongoing ? '무엇을 만들고, 공부하나요?' : '어떤 문제였나요?'}</h2>
-            <p>{p.problem}</p>
+          <section id="approach">
+            <h2>접근과 작업 과정</h2>
+            <ol className={styles.steps}>{project.approach.map((step) => <li key={step}>{step}</li>)}</ol>
           </section>
-          <section>
-            <span className="eyebrow">분석 과정</span>
-            <h2>{ongoing ? '어떻게 이어 가고 있나요?' : '어떻게 접근했나요?'}</h2>
-            <ol>
-              {p.approach.map((a) => (
-                <li key={a}>{a}</li>
-              ))}
-            </ol>
+          <section id="outcome">
+            <h2>{ongoing ? "현재까지의 기록" : "결과와 검증"}</h2>
+            <p>{project.result}</p>
+            {project.caveat && <p className={styles.note}>{project.caveat}</p>}
           </section>
-          <section>
-            <span className="eyebrow">{ongoing ? '현재까지의 기록' : '결과와 기록'}</span>
-            <h2>{ongoing ? '지금 어디까지 왔나요?' : '무엇을 남겼나요?'}</h2>
-            <p>{p.result}</p>
-            <p className="evidence-note">{p.caveat}</p>
-            {p.related?.map((u, i) => (
-              <a
-                href={u}
-                key={u}
-                className="related-link"
-                target="_blank"
-                rel="noreferrer"
-              >
-                연관 분석 기록 {i + 1} <ArrowUpRight size={15} />
-              </a>
-            ))}
-          </section>
-          {p.next && <section><span className="eyebrow">다음 단계</span><h2>이어서 할 일</h2><ul>{p.next.map(item => <li key={item}>{item}</li>)}</ul></section>}
-        </div>
+          {project.next?.length > 0 && <section id="next">
+            <h2>다음 작업</h2>
+            <ul className={styles.next}>{project.next.map((item) => <li key={item}>{item}</li>)}</ul>
+          </section>}
+          {sources.length > 0 && <section id="sources">
+            <h2>관련 자료</h2>
+            <ul className={styles.sources}>{sources.map(({url,title}) => (
+              <li key={url}><a href={url} target="_blank" rel="noreferrer"><span>{title}</span><ArrowUpRight size={17} aria-hidden="true" /></a></li>
+            ))}</ul>
+          </section>}
+          <Link className={styles.back} href={collection.href}><ArrowLeft size={16} aria-hidden="true" />{collection.title} 목록</Link>
+        </article>
       </div>
     </main>
   );
